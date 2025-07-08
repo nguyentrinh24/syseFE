@@ -1,24 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { EmailTemplateService } from '../templates/template.service';
 import { MessageService } from './message.service';
 import { EmailTemplate } from '../shared/models';
 
 @Component({
   selector: 'app-send-email',
-  template: `
-    <h2>Gửi Email</h2>
-    <select [(ngModel)]="selectedCode" (change)="onTemplateChange()">
-      <option *ngFor="let t of templates" [value]="t.code">{{t.name}}</option>
-    </select>
-    <div *ngIf="placeholders.length">
-      <div *ngFor="let p of placeholders">
-        <input [(ngModel)]="variables[p]" [placeholder]="p" />
-      </div>
-    </div>
-    <input [(ngModel)]="to" placeholder="Email người nhận" />
-    <button (click)="send()">Gửi</button>
-    <div *ngIf="msg">{{msg}}</div>
-  `
+  templateUrl: './send-email.component.html',
+  styleUrls: ['./send-email.component.scss'],
+  imports: [FormsModule, CommonModule],
+  standalone: true
 })
 export class SendEmailComponent implements OnInit {
   templates: EmailTemplate[] = [];

@@ -1,0 +1,253 @@
+.template-form-container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.template-form-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 32px;
+  text-align: center;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 16px;
+  }
+}
+
+.template-form {
+  padding: 32px;
+
+  .form-section {
+    margin-bottom: 40px;
+
+    h3 {
+      color: #2d3748;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 20px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+
+    label {
+      display: block;
+      color: #4a5568;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+
+      &::after {
+        content: " *";
+        color: #e53e3e;
+        font-weight: normal;
+      }
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+      background: white;
+
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      &.error {
+        border-color: #e53e3e;
+        box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+      }
+
+      &::placeholder {
+        color: #a0aec0;
+      }
+
+      &[readonly] {
+        background: #f7fafc;
+        color: #718096;
+        cursor: not-allowed;
+      }
+    }
+
+    .content-textarea {
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 300px;
+    }
+
+    .error-message {
+      color: #e53e3e;
+      font-size: 12px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      &::before {
+        content: "⚠";
+        font-size: 14px;
+      }
+    }
+
+    .help-text {
+      color: #718096;
+      font-size: 12px;
+      margin-top: 4px;
+      display: block;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cancel-btn {
+  background: #e2e8f0;
+  color: #4a5568;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background: #cbd5e0;
+    transform: translateY(-1px);
+  }
+
+  .btn-icon {
+    font-size: 16px;
+  }
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-icon {
+    font-size: 16px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .template-form-container {
+    padding: 16px;
+  }
+
+  .card-header {
+    padding: 24px 20px;
+
+    h2 {
+      font-size: 24px;
+    }
+
+    p {
+      font-size: 14px;
+    }
+  }
+
+  .template-form {
+    padding: 24px 20px;
+
+    .form-row {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .form-section {
+      margin-bottom: 32px;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+
+    .cancel-btn,
+    .save-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 20px 16px;
+  }
+
+  .template-form {
+    padding: 20px 16px;
+  }
+} 

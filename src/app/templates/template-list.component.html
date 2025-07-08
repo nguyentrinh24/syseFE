@@ -1,0 +1,79 @@
+<div class="template-list-container">
+  <div class="template-list-header">
+    <div class="header-content">
+      <h2>Danh sách Email Template</h2>
+      <p>Quản lý các template email trong hệ thống</p>
+    </div>
+    <button *ngIf="isAdmin" (click)="create()" class="create-btn">
+      <span class="btn-icon">+</span>
+      <span class="btn-text">Tạo mới</span>
+    </button>
+  </div>
+
+  <div class="filters-section">
+    <div class="filter-group">
+      <label for="filter-code">Lọc theo mã</label>
+      <input 
+        id="filter-code"
+        [(ngModel)]="filterCode" 
+        placeholder="Nhập mã template..." 
+        class="filter-input"
+      />
+    </div>
+    
+    <div class="filter-group">
+      <label for="filter-status">Trạng thái</label>
+      <select 
+        id="filter-status"
+        [(ngModel)]="filterStatus" 
+        class="filter-select"
+      >
+        <option value="">Tất cả</option>
+        <option value="ACTIVE">Bật</option>
+        <option value="INACTIVE">Tắt</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="template-table">
+      <thead>
+        <tr>
+          <th>Tên Template</th>
+          <th>Mã</th>
+          <th>Trạng thái</th>
+          <th *ngIf="isAdmin">Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of filteredTemplates()" class="table-row">
+          <td class="template-name">
+            <div class="name-content">
+              <span class="name-text">{{t.name}}</span>
+            </div>
+          </td>
+          <td class="template-code">
+            <code>{{t.code}}</code>
+          </td>
+          <td class="template-status">
+            <span class="status-badge" [class]="t.status === 'ACTIVE' ? 'active' : 'inactive'">
+              {{t.status === 'ACTIVE' ? 'Bật' : 'Tắt'}}
+            </span>
+          </td>
+          <td *ngIf="isAdmin" class="template-actions">
+            <button (click)="edit(t)" class="action-btn edit-btn">
+              <span class="action-icon">✏️</span>
+              <span class="action-text">Sửa</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredTemplates().length === 0" class="empty-state">
+      <div class="empty-icon">📧</div>
+      <h3>Không tìm thấy template</h3>
+      <p>Không có template nào phù hợp với bộ lọc hiện tại</p>
+    </div>
+  </div>
+</div> 

@@ -1,37 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { EmailTemplateService } from './template.service';
 import { AuthService } from '../shared/auth.service';
 import { EmailTemplate } from '../shared/models';
 
 @Component({
   selector: 'app-template-list',
-  template: `
-    <h2>Danh sách Email Template</h2>
-    <input [(ngModel)]="filterCode" placeholder="Lọc theo code..." />
-    <select [(ngModel)]="filterStatus">
-      <option value="">Tất cả</option>
-      <option value="ACTIVE">Bật</option>
-      <option value="INACTIVE">Tắt</option>
-    </select>
-    <table>
-      <thead>
-        <tr>
-          <th>Tên</th><th>Mã</th><th>Trạng thái</th><th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let t of filteredTemplates()">
-          <td>{{t.name}}</td>
-          <td>{{t.code}}</td>
-          <td>{{t.status}}</td>
-          <td>
-            <button *ngIf="isAdmin" (click)="edit(t)">Sửa</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <button *ngIf="isAdmin" (click)="create()">Tạo mới</button>
-  `
+  templateUrl: './template-list.component.html',
+  styleUrls: ['./template-list.component.scss'],
+  imports: [FormsModule, CommonModule],
+  standalone: true
 })
 export class EmailTemplateListComponent implements OnInit {
   templates: EmailTemplate[] = [];

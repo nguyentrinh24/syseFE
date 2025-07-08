@@ -1,0 +1,77 @@
+<div class="send-email-container">
+  <div class="send-email-card">
+    <div class="card-header">
+      <h2>Gửi Email</h2>
+      <p>Chọn template và điền thông tin để gửi email</p>
+    </div>
+
+    <form class="send-email-form">
+      <div class="form-section">
+        <h3>Chọn Template</h3>
+        <div class="form-group">
+          <label for="template-select">Email Template</label>
+          <select 
+            id="template-select"
+            [(ngModel)]="selectedCode" 
+            (change)="onTemplateChange()"
+            class="form-control"
+            name="template"
+          >
+            <option value="">-- Chọn template --</option>
+            <option *ngFor="let t of templates" [value]="t.code">
+              {{t.name}} ({{t.code}})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section" *ngIf="placeholders.length">
+        <h3>Thông tin thay thế</h3>
+        <div class="placeholders-grid">
+          <div class="form-group" *ngFor="let p of placeholders">
+            <label [for]="'placeholder-' + p">{{p}}</label>
+            <input 
+              [id]="'placeholder-' + p"
+              [(ngModel)]="variables[p]" 
+              [placeholder]="'Nhập giá trị cho ' + p"
+              class="form-control"
+              [name]="'placeholder-' + p"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Thông tin người nhận</h3>
+        <div class="form-group">
+          <label for="email-to">Email người nhận</label>
+          <input 
+            id="email-to"
+            [(ngModel)]="to" 
+            placeholder="example@email.com"
+            class="form-control"
+            name="email-to"
+            type="email"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="button" 
+          (click)="send()" 
+          class="send-btn"
+          [disabled]="!selectedCode || !to"
+        >
+          <span class="btn-icon">📧</span>
+          <span class="btn-text">Gửi Email</span>
+        </button>
+      </div>
+
+      <div class="message-alert" *ngIf="msg" [class]="msg.includes('thành công') ? 'success' : 'error'">
+        <span class="alert-icon">{{msg.includes('thành công') ? '✅' : '❌'}}</span>
+        <span class="alert-text">{{msg}}</span>
+      </div>
+    </form>
+  </div>
+</div> 

@@ -1,0 +1,53 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Đăng nhập</h2>
+      <p>Vui lòng nhập thông tin đăng nhập của bạn</p>
+    </div>
+    
+    <form (ngSubmit)="login()" #loginForm="ngForm" class="login-form">
+      <div class="form-group">
+        <label for="username">Tên đăng nhập</label>
+        <input 
+          id="username"
+          name="username" 
+          [(ngModel)]="username" 
+          placeholder="Nhập tên đăng nhập" 
+          required 
+          class="form-control"
+          [class.error]="loginForm.submitted && !username"
+        />
+        <div class="error-message" *ngIf="loginForm.submitted && !username">
+          Tên đăng nhập là bắt buộc
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Mật khẩu</label>
+        <input 
+          id="password"
+          name="password" 
+          [(ngModel)]="password" 
+          type="password" 
+          placeholder="Nhập mật khẩu" 
+          required 
+          class="form-control"
+          [class.error]="loginForm.submitted && !password"
+        />
+        <div class="error-message" *ngIf="loginForm.submitted && !password">
+          Mật khẩu là bắt buộc
+        </div>
+      </div>
+      
+      <div class="error-alert" *ngIf="error">
+        <i class="error-icon">⚠</i>
+        {{error}}
+      </div>
+      
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid">
+        <span class="btn-text">Đăng nhập</span>
+        <span class="btn-icon">→</span>
+      </button>
+    </form>
+  </div>
+</div> 

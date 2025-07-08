@@ -1,0 +1,134 @@
+<div class="template-form-container">
+  <div class="template-form-card">
+    <div class="card-header">
+      <h2>{{template.id ? 'Sửa' : 'Tạo'}} Email Template</h2>
+      <p>{{template.id ? 'Cập nhật thông tin template' : 'Tạo template email mới'}}</p>
+    </div>
+
+    <form (ngSubmit)="save()" #f="ngForm" class="template-form">
+      <div class="form-section">
+        <h3>Thông tin cơ bản</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="template-name">Tên Template *</label>
+            <input 
+              id="template-name"
+              name="name" 
+              [(ngModel)]="template.name" 
+              placeholder="Nhập tên template" 
+              required 
+              class="form-control"
+              [class.error]="f.submitted && !template.name"
+            />
+            <div class="error-message" *ngIf="f.submitted && !template.name">
+              Tên template là bắt buộc
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="template-code">Mã Template *</label>
+            <input 
+              id="template-code"
+              name="code" 
+              [(ngModel)]="template.code" 
+              placeholder="Nhập mã template" 
+              required 
+              [readonly]="!!template.id"
+              class="form-control"
+              [class.error]="f.submitted && !template.code"
+            />
+            <div class="error-message" *ngIf="f.submitted && !template.code">
+              Mã template là bắt buộc
+            </div>
+            <small class="help-text" *ngIf="template.id">
+              Mã template không thể thay đổi sau khi tạo
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="template-subject">Tiêu đề Email *</label>
+          <input 
+            id="template-subject"
+            name="subject" 
+            [(ngModel)]="template.subject" 
+            placeholder="Nhập tiêu đề email" 
+            required 
+            class="form-control"
+            [class.error]="f.submitted && !template.subject"
+          />
+          <div class="error-message" *ngIf="f.submitted && !template.subject">
+            Tiêu đề email là bắt buộc
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Cấu hình Template</h3>
+        
+        <div class="form-group">
+          <label for="template-placeholders">Placeholders</label>
+          <input 
+            id="template-placeholders"
+            name="placeholders" 
+            [(ngModel)]="placeholdersStr" 
+            placeholder="Tên, Email, Số điện thoại (phân cách bằng dấu phẩy)" 
+            class="form-control"
+          />
+          <small class="help-text">
+            Các biến có thể thay thế trong template, phân cách bằng dấu phẩy
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="template-status">Trạng thái</label>
+          <select 
+            id="template-status"
+            name="status" 
+            [(ngModel)]="template.status" 
+            class="form-control"
+          >
+            <option value="ACTIVE">Bật</option>
+            <option value="INACTIVE">Tắt</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Nội dung Template</h3>
+        
+        <div class="form-group">
+          <label for="template-content">Nội dung HTML *</label>
+          <textarea 
+            id="template-content"
+            name="content" 
+            [(ngModel)]="template.content" 
+            placeholder="Nhập nội dung HTML của email..." 
+            rows="12"
+            required
+            class="form-control content-textarea"
+            [class.error]="f.submitted && !template.content"
+          ></textarea>
+          <div class="error-message" *ngIf="f.submitted && !template.content">
+            Nội dung template là bắt buộc
+          </div>
+          <small class="help-text">
+            Sử dụng HTML để định dạng email. Có thể sử dụng placeholder để chèn biến.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="goBack()">
+          <span class="btn-icon">←</span>
+          <span class="btn-text">Hủy</span>
+        </button>
+        <button type="submit" class="save-btn" [disabled]="f.invalid">
+          <span class="btn-icon">💾</span>
+          <span class="btn-text">{{template.id ? 'Cập nhật' : 'Tạo'}}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div> 

@@ -1,18 +1,15 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../shared/auth.service';
 
 @Component({
   selector: 'app-login',
-  template: `
-    <form (ngSubmit)="login()" #loginForm="ngForm">
-      <h2>Đăng nhập</h2>
-      <input name="username" [(ngModel)]="username" placeholder="Username" required />
-      <input name="password" [(ngModel)]="password" type="password" placeholder="Password" required />
-      <button type="submit">Đăng nhập</button>
-      <div *ngIf="error" style="color:red">{{error}}</div>
-    </form>
-  `
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  imports: [FormsModule, CommonModule],
+  standalone: true
 })
 export class LoginComponent {
   username = '';

@@ -1,0 +1,100 @@
+<div class="email-log-container">
+  <div class="email-log-header">
+    <div class="header-content">
+      <h2>Lịch sử gửi email</h2>
+      <p>Theo dõi các email đã được gửi trong hệ thống</p>
+    </div>
+  </div>
+
+  <div class="filters-section">
+    <div class="filter-group">
+      <label for="filter-template">Lọc theo template</label>
+      <input 
+        id="filter-template"
+        [(ngModel)]="filterTemplate" 
+        placeholder="Nhập tên template..." 
+        class="filter-input"
+      />
+    </div>
+    
+    <div class="filter-group">
+      <label for="filter-from-date">Từ ngày</label>
+      <input 
+        id="filter-from-date"
+        [(ngModel)]="fromDate" 
+        type="date" 
+        class="filter-input"
+      />
+    </div>
+    
+    <div class="filter-group">
+      <label for="filter-to-date">Đến ngày</label>
+      <input 
+        id="filter-to-date"
+        [(ngModel)]="toDate" 
+        type="date" 
+        class="filter-input"
+      />
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="email-log-table">
+      <thead>
+        <tr>
+          <th>Email người nhận</th>
+          <th>Template</th>
+          <th>Trạng thái</th>
+          <th>Thời gian gửi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let l of filteredLogs()" class="table-row">
+          <td class="email-to">
+            <div class="email-content">
+              <span class="email-icon">📧</span>
+              <span class="email-text">{{l.to}}</span>
+            </div>
+          </td>
+          <td class="template-name">
+            <span class="template-text">{{l.templateName}}</span>
+          </td>
+          <td class="status">
+            <span class="status-badge" [class]="getStatusClass(l.status)">
+              {{getStatusText(l.status)}}
+            </span>
+          </td>
+          <td class="sent-time">
+            <div class="time-content">
+              <span class="date-text">{{l.sentAt | date:'dd/MM/yyyy'}}</span>
+              <span class="time-text">{{l.sentAt | date:'HH:mm:ss'}}</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredLogs().length === 0" class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3>Không có dữ liệu</h3>
+      <p>Không tìm thấy lịch sử email nào phù hợp với bộ lọc hiện tại</p>
+    </div>
+  </div>
+
+  <div class="summary-section" *ngIf="filteredLogs().length > 0">
+    <div class="summary-card">
+      <div class="summary-item">
+        <span class="summary-label">Tổng số email</span>
+        <span class="summary-value">{{filteredLogs().length}}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Thành công</span>
+        <span class="summary-value success">{{getSuccessCount()}}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Thất bại</span>
+        <span class="summary-value error">{{getFailureCount()}}</span>
+      </div>
+    </div>
+  </div>
+</div> 
