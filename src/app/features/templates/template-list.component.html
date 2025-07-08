@@ -56,8 +56,8 @@
             <code>{{t.code}}</code>
           </td>
           <td class="template-status">
-            <span class="status-badge" [class]="t.status === 'ACTIVE' ? 'active' : 'inactive'">
-              {{t.status === 'ACTIVE' ? 'Bật' : 'Tắt'}}
+            <span class="status-badge" [class]="t.status === true ? 'active' : 'inactive'">
+              {{t.status === true ? 'Bật' : 'Tắt'}}
             </span>
           </td>
           <td *ngIf="isAdmin" class="template-actions">

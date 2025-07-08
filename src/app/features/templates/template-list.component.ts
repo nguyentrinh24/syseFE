@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EmailTemplateService } from './template.service';
-import { AuthService } from '../shared/auth.service';
-import { EmailTemplate } from '../shared/models';
+import { AuthService } from '../../core/services/auth.service';
+import { EmailTemplate } from '../../core/models/email-template.model';
 
 @Component({
   selector: 'app-template-list',
@@ -25,7 +25,7 @@ export class EmailTemplateListComponent implements OnInit {
   filteredTemplates() {
     return this.templates.filter(t =>
       (!this.filterCode || t.code.includes(this.filterCode)) &&
-      (!this.filterStatus || t.status === this.filterStatus)
+      (!this.filterStatus || (this.filterStatus === 'ACTIVE' ? t.status === true : t.status === false))
     );
   }
   edit(t: EmailTemplate) {/* TODO: chuyển sang form */}

@@ -53,11 +53,11 @@
           <td class="email-to">
             <div class="email-content">
               <span class="email-icon">📧</span>
-              <span class="email-text">{{l.to}}</span>
+              <span class="email-text">{{l.user?.email}}</span>
             </div>
           </td>
           <td class="template-name">
-            <span class="template-text">{{l.templateName}}</span>
+            <span class="template-text">{{l.templateCode}}</span>
           </td>
           <td class="status">
             <span class="status-badge" [class]="getStatusClass(l.status)">

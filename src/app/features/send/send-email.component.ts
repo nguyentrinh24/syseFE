@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EmailTemplateService } from '../templates/template.service';
 import { MessageService } from './message.service';
-import { EmailTemplate } from '../shared/models';
+import { EmailTemplate } from '../../core/models/email-template.model';
 
 @Component({
   selector: 'app-send-email',
@@ -25,7 +25,7 @@ export class SendEmailComponent implements OnInit {
   }
   onTemplateChange() {
     const t = this.templates.find(t => t.code === this.selectedCode);
-    this.placeholders = t ? t.placeholders : [];
+    this.placeholders = t ? JSON.parse(t.placeholders || '[]') : [];
     this.variables = {};
     this.placeholders.forEach(p => this.variables[p] = '');
   }

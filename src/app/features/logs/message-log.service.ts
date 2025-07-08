@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../shared/api.service';
-import { MessageLog } from '../shared/models';
+import { ApiService } from '../../core/services/api.service';
+import { MessageLog } from '../../core/models/message-log.model';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

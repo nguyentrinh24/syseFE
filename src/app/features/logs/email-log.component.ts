@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MessageLogService } from './message-log.service';
-import { MessageLog } from '../shared/models';
+import { MessageLog } from '../../core/models/message-log.model';
 
 @Component({
   selector: 'app-email-log',
@@ -22,7 +22,7 @@ export class EmailLogComponent implements OnInit {
   }
   filteredLogs() {
     return this.logs.filter(l =>
-      (!this.filterTemplate || l.templateName.includes(this.filterTemplate)) &&
+      (!this.filterTemplate || l.templateCode.includes(this.filterTemplate)) &&
       (!this.fromDate || l.sentAt >= this.fromDate) &&
       (!this.toDate || l.sentAt <= this.toDate)
     );

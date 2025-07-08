@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../shared/api.service';
-import { EmailTemplate } from '../shared/models';
+import { ApiService } from '../../core/services/api.service';
+import { EmailTemplate } from '../../core/models/email-template.model';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })

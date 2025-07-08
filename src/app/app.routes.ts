@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login.component';
-import { SendEmailComponent } from './send/send-email.component';
-import { EmailLogComponent } from './logs/email-log.component';
-import { EmailTemplateListComponent } from './templates/template-list.component';
-import { EmailTemplateFormComponent } from './templates/template-form.component';
+import { SendEmailComponent } from './features/send/send-email.component';
+import { EmailLogComponent } from './features/logs/email-log.component';
+import { EmailTemplateListComponent } from './features/templates/template-list.component';
+import { EmailTemplateFormComponent } from './features/templates/template-form.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/send', pathMatch: 'full' },

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EmailTemplateService } from './template.service';
-import { EmailTemplate } from '../shared/models';
+import { EmailTemplate } from '../../core/models/email-template.model';
 
 @Component({
   selector: 'app-template-form',
@@ -13,9 +13,19 @@ import { EmailTemplate } from '../shared/models';
   standalone: true
 })
 export class EmailTemplateFormComponent {
-  @Input() template: EmailTemplate = {id: 0, name: '', code: '', subject: '', placeholders: [], content: '', status: 'ACTIVE'};
-  get placeholdersStr() { return this.template.placeholders.join(','); }
-  set placeholdersStr(val: string) { this.template.placeholders = val.split(',').map(s => s.trim()).filter(Boolean); }
+  @Input() template: EmailTemplate = {id: 0, name: '', code: '', subject: '', placeholders: '[]', content: '', status: true};
+  get placeholdersStr() {
+    try {
+      const arr = JSON.parse(this.template.placeholders || '[]');
+      return Array.isArray(arr) ? arr.join(',') : '';
+    } catch {
+      return '';
+    }
+  }
+  set placeholdersStr(val: string) {
+    const arr = val.split(',').map(s => s.trim()).filter(Boolean);
+    this.template.placeholders = JSON.stringify(arr);
+  }
   constructor(private service: EmailTemplateService, private router: Router) {}
   save() {
     if (this.template.id) {
