@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { EmailTemplateService } from './template.service';
-import { EmailTemplate } from '../../core/models/email-template.model';
+import { EmailTemplateService } from '../template.service';
+import { EmailTemplate } from '../../../core/models/email-template.model';
 
 @Component({
   selector: 'app-template-form',

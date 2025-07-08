@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EmailTemplateService } from './template.service';
-import { AuthService } from '../../core/services/auth.service';
-import { EmailTemplate } from '../../core/models/email-template.model';
+import { EmailTemplateService } from '../template.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { EmailTemplate } from '../../../core/models/email-template.model';
 
 @Component({
   selector: 'app-template-list',

@@ -1,0 +1,87 @@
+.notification-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 2rem;
+}
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.add-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.add-btn:hover {
+  box-shadow: 0 2px 8px rgba(102,126,234,0.2);
+}
+.notification-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fafbfc;
+}
+.notification-table th, .notification-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+.notification-table th {
+  background: #f3f4f6;
+  font-weight: 700;
+  color: #4a5568;
+}
+.notification-table tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+.edit-btn, .delete-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  margin-right: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.edit-btn {
+  background: #667eea;
+  color: #fff;
+}
+.edit-btn:hover {
+  background: #5a67d8;
+}
+.delete-btn {
+  background: #fed7d7;
+  color: #c53030;
+}
+.delete-btn:hover {
+  background: #feb2b2;
+}
+.empty-message {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+@media (max-width: 600px) {
+  .notification-container {
+    padding: 1rem;
+  }
+  .notification-header h2 {
+    font-size: 1.2rem;
+  }
+  .notification-table th, .notification-table td {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.95rem;
+  }
+} 

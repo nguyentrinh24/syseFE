@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { EmailTemplateListComponent } from './template-list.component';
+import { EmailTemplateListComponent } from './template-list/template-list.component';
 
 const routes: Routes = [
   { path: '', component: EmailTemplateListComponent }

@@ -11,7 +11,8 @@ import { CommonModule } from '@angular/common';
       <nav style="background: #f8f9fa; padding: 1rem; margin-bottom: 1rem;">
     <a *ngIf="auth.isAdmin()" routerLink="/send" style="margin-right: 1rem; color: #667eea ; text-decoration: none;">Gửi Email</a>
     <a *ngIf="auth.isAdmin()" routerLink="/logs" style="margin-right: 1rem; color: #667eea ; text-decoration: none;">Lịch sử</a>
-    <a *ngIf="auth.isAdmin()" routerLink="/templates" style="margin-right: 1rem; color: #667eea ; text-decoration: none;">Templates</a>
+    <a *ngIf="auth.isAdmin()" routerLink="/templates" style="margin-right: 1rem; color: #667eea ; text-decoration: none;">Templates Email</a>
+    <a *ngIf="auth.isAdmin()" routerLink="/notifications" style="margin-right: 1rem; color: #667eea ; text-decoration: none;">Notifications</a>
     <a (click)="logoutAndReload()" style="float:right; margin-right: 1rem; cursor: pointer; color: #667eea ; text-decoration: none;">Đăng xuất</a>
   </nav>
       <div style="padding: 0 1rem;">
@@ -33,8 +34,8 @@ export class AppComponent {
   auth = inject(AuthService);
   router = inject(Router);
   logoutAndReload() {
+      debugger;
     this.auth.logout();
-    window.location.reload();
     this.router.navigate(['/login']);
   }
   goToLogin() {
