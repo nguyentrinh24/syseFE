@@ -1,0 +1,45 @@
+<div class="notification-form-container">
+  <h2>{{isEdit ? 'Edit' : 'Add'}} Notification Template</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label>Name</label>
+      <input formControlName="name" placeholder="Enter name" />
+    </div>
+    <div class="form-group">
+      <label>Subject</label>
+      <input formControlName="subject" placeholder="Enter subject" />
+    </div>
+    <div class="form-group">
+      <label>Content</label>
+      <textarea formControlName="content" rows="5" placeholder="Enter content"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Biến động (Placeholders)</label>
+      <div class="placeholder-tags">
+        <span *ngFor="let p of placeholders; let i = index" class="code-badge">
+          {{p}}
+          <button type="button" (click)="removePlaceholder(i)" class="remove-tag">&times;</button>
+        </span>
+        <input type="text" [(ngModel)]="newPlaceholder" (keydown.enter)="addPlaceholder(); $event.preventDefault();" placeholder="Thêm biến..." [ngModelOptions]="{standalone: true}" />
+        <button type="button" (click)="addPlaceholder()" class="add-tag">+</button>
+      </div>
+    </div>
+    <div class="form-group" *ngIf="placeholders.length">
+      <label>Nhập giá trị placeholders</label>
+      <div class="placeholders-grid">
+        <div class="form-group" *ngFor="let p of placeholders">
+          <label [for]="'ph-' + p">{{p}}</label>
+          <input [id]="'ph-' + p" [(ngModel)]="variables[p]" (ngModelChange)="renderPreview()" [placeholder]="p" [ngModelOptions]="{standalone: true}" />
+        </div>
+      </div>
+    </div>
+    <div class="form-group" *ngIf="form.get('content')?.value">
+      <label>Preview nội dung động</label>
+      <div class="notification-preview" [innerHTML]="previewHtml"></div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="save-btn">{{isEdit ? 'Update' : 'Create'}}</button>
+      <button type="button" class="cancel-btn" (click)="router.navigate(['/notifications'])">Cancel</button>
+    </div>
+  </form>
+</div> 

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export class MessageService {
   private url = '/api/send-email';
   constructor(private api: ApiService) {}
-  send(data: {templateCode: string, to: string, variables: any}): Observable<any> {
+  send(data: {templateCode: string, userId: number, placeholders: any}): Observable<any> {
     return this.api.post<any>(this.url, data);
   }
 } 

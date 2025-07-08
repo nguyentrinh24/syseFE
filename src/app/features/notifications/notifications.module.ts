@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationListComponent } from './notification-list.component';
-import { NotificationFormComponent } from './notification-form.component';
+import { NotificationListComponent } from './notification-list/notification-list.component';
+import { NotificationFormComponent } from './notification-form/notification-form.component';
 import { NotificationsRoutingModule } from './notifications-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 

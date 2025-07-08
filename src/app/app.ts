@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
     <a (click)="logoutAndReload()" style="float:right; margin-right: 1rem; cursor: pointer; color: #667eea ; text-decoration: none;">Đăng xuất</a>
   </nav>
       <div style="padding: 0 1rem;">
-        <router-outlet></router-outlet>
+        <!-- <router-outlet></router-outlet> -->
         <div *ngIf="!auth.isAdmin()" style="margin-top:2rem; text-align:center; font-size:1.5rem;">
           Wellcome, {{auth.getUsername()}}!
         </div>

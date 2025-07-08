@@ -46,7 +46,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let t of filteredTemplates()" class="table-row">
+        <tr *ngFor="let t of filteredTemplates()" class="table-row" (click)="viewDetail(t)" style="cursor:pointer;">
           <td class="template-name">
             <div class="name-content">
               <span class="name-text">{{t.name}}</span>
@@ -61,9 +61,14 @@
             </span>
           </td>
           <td *ngIf="isAdmin" class="template-actions">
-            <button (click)="edit(t)" class="action-btn edit-btn">
-             
+            <button (click)="edit(t); $event.stopPropagation()" class="action-btn edit-btn">
               <span class="action-text">Sửa</span>
+            </button>
+            <button (click)="delete(t); $event.stopPropagation()" class="action-btn delete-btn">
+              <span class="action-text">Xóa</span>
+            </button>
+            <button (click)="viewDetail(t); $event.stopPropagation()" class="action-btn detail-btn">
+              <span class="action-text">Chi tiết</span>
             </button>
           </td>
         </tr>

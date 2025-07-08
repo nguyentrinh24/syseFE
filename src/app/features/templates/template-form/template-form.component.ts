@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { EmailTemplateService } from '../template.service';
 import { EmailTemplate } from '../../../core/models/email-template.model';
 
@@ -13,7 +13,7 @@ import { EmailTemplate } from '../../../core/models/email-template.model';
   standalone: true
 })
 export class EmailTemplateFormComponent {
-  @Input() template: EmailTemplate = {id: 0, name: '', code: '', subject: '', placeholders: '[]', content: '', status: true};
+  @Input() template: EmailTemplate = {name: '', code: '', subject: '', placeholders: '[]', content: '', status: true} as EmailTemplate;
   get placeholdersStr() {
     try {
       const arr = JSON.parse(this.template.placeholders || '[]');
@@ -26,12 +26,17 @@ export class EmailTemplateFormComponent {
     const arr = val.split(',').map(s => s.trim()).filter(Boolean);
     this.template.placeholders = JSON.stringify(arr);
   }
-  constructor(private service: EmailTemplateService, private router: Router) {}
+  constructor(private service: EmailTemplateService, private router: Router, private route: ActivatedRoute) {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.service.get(+id).subscribe(t => this.template = t);
+    }
+  }
   save() {
     if (this.template.id) {
-      this.service.update(this.template).subscribe();
+      this.service.update(this.template).subscribe(() => this.goBack());
     } else {
-      this.service.create(this.template).subscribe();
+      this.service.create(this.template).subscribe(() => this.goBack());
     }
   }
 

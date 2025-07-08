@@ -77,4 +77,21 @@
     flex-direction: column;
     gap: 0.5rem;
   }
+}
+.placeholders-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.notification-preview {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 60px;
+  font-size: 1rem;
+  color: #2d3748;
+  margin-top: 0.5rem;
+  word-break: break-word;
 } 

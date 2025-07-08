@@ -1,10 +1,10 @@
-.template-list-container {
+.notification-list-container {
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.template-list-header {
+.notification-list-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -18,15 +18,9 @@
       font-weight: 700;
       margin: 0 0 8px 0;
     }
-
-    p {
-      color: #718096;
-      font-size: 16px;
-      margin: 0;
-    }
   }
 
-  .create-btn {
+  .add-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -40,15 +34,9 @@
     align-items: center;
     gap: 8px;
     white-space: nowrap;
-
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-icon {
-      font-size: 16px;
-      font-weight: bold;
     }
   }
 }
@@ -58,11 +46,9 @@
   gap: 24px;
   margin-bottom: 24px;
   flex-wrap: wrap;
-
   .filter-group {
     flex: 1;
     min-width: 200px;
-
     label {
       display: block;
       color: #4a5568;
@@ -70,7 +56,6 @@
       font-weight: 600;
       margin-bottom: 8px;
     }
-
     .filter-input,
     .filter-select {
       width: 100%;
@@ -80,18 +65,15 @@
       font-size: 14px;
       transition: all 0.3s ease;
       box-sizing: border-box;
-
       &:focus {
         outline: none;
         border-color: #667eea;
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       }
-
       &::placeholder {
         color: #a0aec0;
       }
     }
-
     .filter-select {
       cursor: pointer;
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
@@ -110,14 +92,12 @@
   overflow: hidden;
 }
 
-.template-table {
+.notification-table {
   width: 100%;
   border-collapse: collapse;
-
   thead {
     background: #f7fafc;
     border-bottom: 2px solid #e2e8f0;
-
     th {
       padding: 16px;
       text-align: left;
@@ -128,20 +108,16 @@
       letter-spacing: 0.5px;
     }
   }
-
   tbody {
     .table-row {
       border-bottom: 1px solid #e2e8f0;
       transition: background-color 0.2s ease;
-
       &:hover {
         background: #f7fafc;
       }
-
       &:last-child {
         border-bottom: none;
       }
-
       td {
         padding: 16px;
         vertical-align: middle;
@@ -150,7 +126,7 @@
   }
 }
 
-.template-name {
+.notification-name {
   .name-content {
     .name-text {
       color: #2d3748;
@@ -160,40 +136,34 @@
   }
 }
 
-.template-code {
-  code {
-    background: #edf2f7;
-    color: #2d3748;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 13px;
+.code-badge {
+  background: #edf2f7;
+  color: #2d3748;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  &.active {
+    background: #c6f6d5;
+    color: #22543d;
+  }
+  &.inactive {
+    background: #fed7d7;
+    color: #c53030;
   }
 }
 
-.template-status {
-  .status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    &.active {
-      background: #c6f6d5;
-      color: #22543d;
-    }
-
-    &.inactive {
-      background: #fed7d7;
-      color: #c53030;
-    }
-  }
-}
-
-.template-actions {
+.notification-actions {
   .action-btn {
     background:  #667eea;
     color: white;
@@ -207,36 +177,28 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-
     &:hover {
       background: #3182ce;
       transform: translateY(-1px);
     }
-
-    .action-icon {
-      font-size: 14px;
-    }
   }
 }
 
-.empty-state {
+.empty-state, .empty-message {
   text-align: center;
   padding: 60px 20px;
   color: #718096;
-
   .empty-icon {
     font-size: 48px;
     margin-bottom: 16px;
     opacity: 0.5;
   }
-
   h3 {
     color: #4a5568;
     font-size: 18px;
     font-weight: 600;
     margin: 0 0 8px 0;
   }
-
   p {
     margin: 0;
     font-size: 14px;
@@ -245,34 +207,28 @@
 
 // Responsive design
 @media (max-width: 768px) {
-  .template-list-container {
+  .notification-list-container {
     padding: 16px;
   }
-
-  .template-list-header {
+  .notification-list-header {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
-
-    .create-btn {
+    .add-btn {
       align-self: flex-start;
     }
   }
-
   .filters-section {
     flex-direction: column;
     gap: 16px;
-
     .filter-group {
       min-width: auto;
     }
   }
-
-  .template-table {
+  .notification-table {
     thead {
       display: none;
     }
-
     tbody {
       .table-row {
         display: block;
@@ -280,12 +236,10 @@
         border-radius: 8px;
         margin-bottom: 16px;
         padding: 16px;
-
         td {
           display: block;
           padding: 8px 0;
           border: none;
-
           &:before {
             content: attr(data-label) ": ";
             font-weight: 600;
@@ -293,8 +247,7 @@
             margin-right: 8px;
           }
         }
-
-        .template-actions {
+        .notification-actions {
           padding-top: 16px;
           border-top: 1px solid #e2e8f0;
           margin-top: 8px;
@@ -305,13 +258,12 @@
 }
 
 @media (max-width: 480px) {
-  .template-list-header {
+  .notification-list-header {
     .header-content h2 {
       font-size: 24px;
     }
   }
-
-  .template-actions .action-btn {
+  .notification-actions .action-btn {
     width: 100%;
     justify-content: center;
   }

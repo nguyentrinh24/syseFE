@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { EmailTemplateService } from '../template.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { EmailTemplate } from '../../../core/models/email-template.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-template-list',
@@ -17,7 +18,7 @@ export class EmailTemplateListComponent implements OnInit {
   filterCode = '';
   filterStatus = '';
   isAdmin = false;
-  constructor(private service: EmailTemplateService, private auth: AuthService) {}
+  constructor(private service: EmailTemplateService, private auth: AuthService, private router: Router) {}
   ngOnInit() {
     this.isAdmin = this.auth.isAdmin();
     this.service.getAll().subscribe((t: EmailTemplate[]) => this.templates = t);
@@ -28,6 +29,20 @@ export class EmailTemplateListComponent implements OnInit {
       (!this.filterStatus || (this.filterStatus === 'ACTIVE' ? t.status === true : t.status === false))
     );
   }
-  edit(t: EmailTemplate) {/* TODO: chuyển sang form */}
-  create() {/* TODO: chuyển sang form tạo mới */}
+  edit(t: EmailTemplate) {
+    this.router.navigate(['/templates/edit', t.id]);
+  }
+  create() {
+    this.router.navigate(['/templates/create']);
+  }
+  delete(t: EmailTemplate) {
+    if (confirm('Bạn có chắc chắn muốn xóa template này?')) {
+      this.service.delete(t.id!).subscribe(() => {
+        this.templates = this.templates.filter(x => x.id !== t.id);
+      });
+    }
+  }
+  viewDetail(t: EmailTemplate) {
+    this.router.navigate(['/templates/detail', t.id]);
+  }
 } 

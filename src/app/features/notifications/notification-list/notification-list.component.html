@@ -1,0 +1,52 @@
+<div class="notification-list-container">
+  <div class="notification-list-header">
+    <div class="header-content">
+      <h2>Notification Templates</h2>
+      <p>Quản lý các template Notification trong hệ thống</p>
+    </div>
+    <button class="add-btn" *ngIf="isAdmin" (click)="create()">+ Add New</button>
+  </div>
+  <div class="filters-section">
+    <div class="filter-group">
+      <input class="filter-input" [(ngModel)]="filterCode" placeholder="Lọc theo mã " />
+    </div>
+    <div class="filter-group">
+      <select class="filter-select" [(ngModel)]="filterStatus">
+        <option value="">Trạng thái</option>
+        <option value="ACTIVE">Bật</option>
+        <option value="INACTIVE">Tắt </option>
+      </select>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="notification-table" *ngIf="filteredNotifications().length > 0; else emptyBlock">
+      <thead>
+        <tr>
+          <th>TÊN NOTIFICATION</th>
+          <th>MÃ</th>
+          <th>TRẠNG THÁI</th>
+          <th>HÀNH ĐỘNG</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-row" *ngFor="let n of filteredNotifications()">
+          <td class="notification-name"><span class="name-text">{{n.name}}</span></td>
+          <td><span class="code-badge">{{n.code}}</span></td>
+          <td><span class="status-badge" [ngClass]="{'active': n.status, 'inactive': !n.status}">{{ n.status ? 'BẬT' : 'TẮT' }}</span></td>
+          <td class="notification-actions">
+            <button class="action-btn" *ngIf="isAdmin" (click)="edit(n)">Sửa</button>
+            <button class="action-btn" *ngIf="isAdmin" (click)="delete(n.id)">Xóa</button>
+            <button class="action-btn" (click)="viewDetail(n)">Chi tiết</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <ng-template #emptyBlock>
+      <div class="empty-state">
+        <span class="empty-icon">📭</span>
+        <h3>No notifications found.</h3>
+        <p>Try adjusting your filters or add a new notification.</p>
+      </div>
+    </ng-template>
+  </div>
+</div> 

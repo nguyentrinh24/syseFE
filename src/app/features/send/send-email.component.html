@@ -36,9 +36,15 @@
               [placeholder]="'Nhập giá trị cho ' + p"
               class="form-control"
               [name]="'placeholder-' + p"
+              (ngModelChange)="renderPreview()"
             />
           </div>
         </div>
+      </div>
+
+      <div class="form-section" *ngIf="selectedCode">
+        <h3>Preview nội dung email</h3>
+        <div class="email-preview" [innerHTML]="previewHtml"></div>
       </div>
 
       <div class="form-section">
@@ -63,7 +69,7 @@
           class="send-btn"
           [disabled]="!selectedCode || !to"
         >
-          <span class="btn-icon">📧</span>
+          
           <span class="btn-text">Gửi Email</span>
         </button>
       </div>

@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { EmailTemplateService } from '../templates/template.service';
 import { MessageService } from './message.service';
 import { EmailTemplate } from '../../core/models/email-template.model';
+import { AuthService } from '../../core/services/auth.service';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-send-email',
@@ -19,21 +21,54 @@ export class SendEmailComponent implements OnInit {
   variables: {[k: string]: string} = {};
   to = '';
   msg = '';
-  constructor(private templateService: EmailTemplateService, private messageService: MessageService) {}
+  userId: number | null = null;
+  previewHtml = '';
+  constructor(
+    private templateService: EmailTemplateService,
+    private messageService: MessageService,
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
   ngOnInit() {
     this.templateService.getAll().subscribe((t: EmailTemplate[]) => this.templates = t);
+    const username = this.authService.getUsername();
+    if (username) {
+      this.userService.getUsers().subscribe(users => {
+        const user = users.find(u => u.username === username);
+        this.userId = user?.id ?? null;
+      });
+    }
   }
   onTemplateChange() {
     const t = this.templates.find(t => t.code === this.selectedCode);
     this.placeholders = t ? JSON.parse(t.placeholders || '[]') : [];
     this.variables = {};
     this.placeholders.forEach(p => this.variables[p] = '');
+    this.previewHtml = '';
+  }
+  renderPreview() {
+    const t = this.templates.find(t => t.code === this.selectedCode);
+    if (!t) {
+      this.previewHtml = '';
+      return '';
+    }
+    let html = t.content;
+    Object.keys(this.variables).forEach(key => {
+      const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+      html = html.replace(regex, this.variables[key] || '');
+    });
+    this.previewHtml = html;
+    return html;
   }
   send() {
+    if (!this.userId) {
+      this.msg = 'Không tìm thấy userId!';
+      return;
+    }
     this.messageService.send({
       templateCode: this.selectedCode,
-      to: this.to,
-      variables: this.variables
+      userId: this.userId,
+      placeholders: this.variables
     }).subscribe({
       next: () => this.msg = 'Gửi thành công!',
       error: () => this.msg = 'Gửi thất bại!'
