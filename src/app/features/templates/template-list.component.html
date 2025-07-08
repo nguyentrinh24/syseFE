@@ -62,7 +62,7 @@
           </td>
           <td *ngIf="isAdmin" class="template-actions">
             <button (click)="edit(t)" class="action-btn edit-btn">
-              <span class="action-icon">✏️</span>
+             
               <span class="action-text">Sửa</span>
             </button>
           </td>
@@ -71,7 +71,7 @@
     </table>
 
     <div *ngIf="filteredTemplates().length === 0" class="empty-state">
-      <div class="empty-icon">📧</div>
+      <div class="empty-icon"></div>
       <h3>Không tìm thấy template</h3>
       <p>Không có template nào phù hợp với bộ lọc hiện tại</p>
     </div>
