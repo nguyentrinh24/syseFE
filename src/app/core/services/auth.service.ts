@@ -16,7 +16,8 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
       tap((res: any) => {
         this.storageService.setItem('token', res.token);
-        this.storageService.setItem('role', res.role);
+        this.storageService.setItem('role', res.roles && res.roles.length ? res.roles[0] : res.role);
+        this.storageService.setItem('username', res.username);
       })
     );
   }
@@ -24,6 +25,7 @@ export class AuthService {
   logout() {
     this.storageService.removeItem('token');
     this.storageService.removeItem('role');
+    this.storageService.removeItem('username');
   }
 
   getToken(): string | null {
@@ -32,6 +34,10 @@ export class AuthService {
 
   getRole(): string | null {
     return this.storageService.getItem('role');
+  }
+
+  getUsername(): string | null {
+    return this.storageService.getItem('username');
   }
 
   isLoggedIn(): boolean {

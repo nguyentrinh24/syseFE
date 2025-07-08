@@ -6,7 +6,7 @@ import { EmailTemplateListComponent } from './features/templates/template-list.c
 import { EmailTemplateFormComponent } from './features/templates/template-form.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/send', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'send', component: SendEmailComponent },
   { path: 'logs', component: EmailLogComponent },

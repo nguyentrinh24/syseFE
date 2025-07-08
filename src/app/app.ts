@@ -1,20 +1,42 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
+import { inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   template: `
-    <nav style="background: #f8f9fa; padding: 1rem; margin-bottom: 1rem;">
-      <a routerLink="/send" style="margin-right: 1rem;">Gửi Email</a>
-      <a routerLink="/logs" style="margin-right: 1rem;">Lịch sử</a>
-      <a routerLink="/templates" style="margin-right: 1rem;">Templates</a>
-      <a routerLink="/login">Đăng nhập</a>
-    </nav>
-    <div style="padding: 0 1rem;">
+    <ng-container *ngIf="auth.isLoggedIn(); else loginBlock">
+      <nav style="background: #f8f9fa; padding: 1rem; margin-bottom: 1rem;">
+        <a *ngIf="auth.isAdmin()" routerLink="/send" style="margin-right: 1rem;">Gửi Email</a>
+        <a *ngIf="auth.isAdmin()" routerLink="/logs" style="margin-right: 1rem;">Lịch sử</a>
+        <a *ngIf="auth.isAdmin()" routerLink="/templates" style="margin-right: 1rem;">Templates</a>
+        <a (click)="logoutAndReload()" style="float:right;">Đăng xuất</a>
+      </nav>
+      <div style="padding: 0 1rem;">
+        <router-outlet></router-outlet>
+        <div *ngIf="!auth.isAdmin()" style="margin-top:2rem; text-align:center; font-size:1.5rem;">
+          Wellcome, {{auth.getUsername()}}!
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #loginBlock>
       <router-outlet></router-outlet>
-    </div>
+    </ng-template>
   `,
-  imports: [RouterOutlet, RouterLink],
-  standalone: true
+  imports: [RouterOutlet, RouterLink, CommonModule],
+  standalone: true,
+  providers: [AuthService]
 })
-export class AppComponent {}
+export class AppComponent {
+  auth = inject(AuthService);
+  router = inject(Router);
+  logoutAndReload() {
+    this.auth.logout();
+    window.location.reload();
+  }
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+}

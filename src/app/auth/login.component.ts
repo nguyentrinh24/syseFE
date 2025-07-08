@@ -18,7 +18,10 @@ export class LoginComponent {
   constructor(private auth: AuthService, private router: Router) {}
   login() {
     this.auth.login(this.username, this.password).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => {
+        this.router.navigate(['/']);
+        window.location.reload();
+      },
       error: err => this.error = 'Sai tài khoản hoặc mật khẩu!'
     });
   }
