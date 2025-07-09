@@ -1,33 +1,41 @@
-<div class="template-detail-container" *ngIf="template">
-  <h2>Chi tiết Email Template</h2>
-  <div class="detail-row"><strong>ID:</strong> {{template.id}}</div>
-  <div class="detail-row"><strong>Tên:</strong> {{template.name}}</div>
-  <div class="detail-row"><strong>Mã:</strong> {{template.code}}</div>
-  <div class="detail-row"><strong>Trạng thái:</strong> <span [class.active]="template.status" [class.inactive]="!template.status">{{template.status ? 'Bật' : 'Tắt'}}</span></div>
-  <div class="detail-row"><strong>Placeholders:</strong> <span *ngIf="template.placeholders">{{template.placeholders}}</span></div>
-  <div class="detail-row"><strong>Ngày tạo:</strong> {{template.createdAt | date:'medium'}}</div>
-  <div class="detail-row"><strong>Chi tiết gười tạo</strong> <br>
-    <div *ngIf="template.createdBy">
-      <div><strong>Tài khoản:</strong> {{template.createdBy.username}}</div>
-      <div><strong>Email:</strong> {{template.createdBy.email}}</div>
-      <div><strong>Họ tên:</strong> {{template.createdBy.fullName}}</div>
-      <div><strong>Quyền hạn:</strong> {{ template.createdBy.role.name }}</div>
+<div class="template-form-container">
+  <div class="template-form-card">
+    <div class="card-header">
+      <h2>Chi tiết Email Template</h2>
     </div>
-  </div>
-  <!-- <div class="detail-row"><strong>Nội dung HTML:</strong></div>
-  <div class="detail-content" [innerHTML]="template.content"></div>
-  <div class="detail-row" *ngIf="placeholders.length">
-    <strong>Nhập giá trị placeholders để xem preview:</strong>
-    <div class="placeholders-grid">
-      <div class="form-group" *ngFor="let p of placeholders">
-        <label [for]="'ph-' + p">{{p}}</label>
-        <input [id]="'ph-' + p" [(ngModel)]="variables[p]" (ngModelChange)="renderPreview()" [placeholder]="p" />
+    <div *ngIf="loading" class="loading">Đang tải...</div>
+    <div *ngIf="error" class="error">{{error}}</div>
+    <div class="template-form" *ngIf="template && !loading">
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-group"><label>Tên:</label> <span class="name-text">{{template.name}}</span></div>
+          <div class="form-group"><label>Mã:</label> <span class="code-badge">{{template.code}}</span></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Trạng thái:</label> <span class="status-badge" [ngClass]="{'active': template.status, 'inactive': !template.status}">{{ template.status ? 'BẬT' : 'TẮT' }}</span></div>
+          <div class="form-group"><label>Tiêu đề:</label> {{template.subject}}</div>
+        </div>
+        <div class="form-group"><label>Biến động:</label>
+          <span *ngFor="let p of placeholders" class="code-badge">{{p}}</span>
+        </div>
+        <div class="form-group"><label>Nội dung HTML:</label>
+          <div class="notification-preview" [innerHTML]="template.content"></div>
+        </div>
+        <div class="form-group" *ngIf="template.createdBy">
+          <label>Người tạo:</label> {{template.createdBy.fullName || template.createdBy.username}}
+        </div>
+        <div class="form-group" *ngIf="template.createdAt">
+          <label>Ngày tạo:</label> {{template.createdAt | date:'dd/MM/yyyy HH:mm'}}
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="cancel-btn" (click)="goBack()">Quay lại</button>
       </div>
     </div>
-  </div> -->
-  <div class="detail-row" *ngIf="template">
-    <strong>Nội dung HTML:</strong>
-    <div class="detail-content" [innerHTML]="previewHtml"></div>
+    <div *ngIf="!template && !loading" class="empty-state">
+      <span class="empty-icon">📭</span>
+      <h3>Không tìm thấy template.</h3>
+      <p>Template không tồn tại hoặc đã bị xóa.</p>
+    </div>
   </div>
-  <button (click)="goBack()" class="back-btn">Quay lại</button>
-</div> 
+</div>

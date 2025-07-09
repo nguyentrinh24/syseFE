@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NotificationService } from '../notification.service';
+import { NotificationService, ApiResponse } from '../notification.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
@@ -20,6 +20,13 @@ export class NotificationListComponent implements OnInit {
   isAdmin = false;
   loading = false;
   error = '';
+  // Pagination
+  page = 0;
+  size = 10;
+  totalPages = 0;
+  totalItems = 0;
+  sortBy = 'id';
+  sortDir = 'asc';
 
   constructor(public router: Router, private notificationService: NotificationService, private auth: AuthService) {}
 
@@ -31,27 +38,53 @@ export class NotificationListComponent implements OnInit {
   loadNotifications() {
     this.loading = true;
     this.error = '';
-    
-    console.log('Loading notifications...');
-    this.notificationService.getAll().subscribe({
-      next: (data: any[]) => {
-        console.log('Notifications loaded:', data);
-        this.notifications = data;
+    const params: any = {
+      page: this.page,
+      size: this.size,
+      sortBy: this.sortBy,
+      sortDir: this.sortDir,
+      code: this.filterCode,
+      status: this.filterStatus !== '' ? (this.filterStatus === 'ACTIVE' ? true : false) : undefined
+    };
+    this.notificationService.getPage(params).subscribe({
+      next: (res: ApiResponse<any>) => {
+        if (res.success) {
+          this.notifications = res.data.content || [];
+          this.totalPages = res.data.totalPages || 0;
+          this.totalItems = res.data.totalItems || 0;
+          this.size = res.data.size || this.size;
+          this.page = res.data.currentPage || this.page;
+        } else {
+          this.error = res.message || 'Không thể tải danh sách notifications.';
+        }
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading notifications:', error);
-        this.error = 'Không thể tải danh sách notifications: ' + error.message;
+        this.error = error?.error?.message || 'Không thể tải danh sách notifications: ' + error.message;
         this.loading = false;
       }
     });
   }
 
-  filteredNotifications() {
-    return this.notifications.filter(n =>
-      (!this.filterCode || n.code?.includes(this.filterCode)) &&
-      (!this.filterStatus || (this.filterStatus === 'ACTIVE' ? n.status === true : n.status === false))
-    );
+  onPageChange(newPage: number) {
+    this.page = newPage;
+    this.loadNotifications();
+  }
+
+  onPageSizeChange(newSize: number) {
+    this.size = newSize;
+    this.page = 0;
+    this.loadNotifications();
+  }
+
+  onSortChange(sortBy: string) {
+    this.sortBy = sortBy;
+    this.loadNotifications();
+  }
+
+  onFilter() {
+    this.page = 0;
+    this.loadNotifications();
   }
 
   edit(n: any) {
@@ -65,12 +98,15 @@ export class NotificationListComponent implements OnInit {
   delete(id: number) {
     if (confirm('Delete this notification?')) {
       this.notificationService.delete(id).subscribe({
-        next: () => {
-          this.notifications = this.notifications.filter(x => x.id !== id);
+        next: (res) => {
+          if (res.success) {
+            this.loadNotifications();
+          } else {
+            alert(res.message || 'Lỗi khi xóa notification');
+          }
         },
         error: (error) => {
-          console.error('Error deleting notification:', error);
-          alert('Lỗi khi xóa notification: ' + error.message);
+          alert(error?.error?.message || 'Lỗi khi xóa notification: ' + error.message);
         }
       });
     }

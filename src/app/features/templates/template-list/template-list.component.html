@@ -5,7 +5,6 @@
       <p>Quản lý các template email trong hệ thống</p>
     </div>
     <button *ngIf="isAdmin" (click)="create()" class="create-btn">
-      <span class="btn-icon">+</span>
       <span class="btn-text">Tạo mới</span>
     </button>
   </div>
@@ -17,8 +16,8 @@
       <input 
         id="search-input"
         type="text"
-        [value]="filterSearch"
-        (input)="onSearchChange($any($event.target).value)"
+        [(ngModel)]="filterCode"
+        (input)="onFilter()"
         placeholder="Tìm theo tên, mã hoặc chủ đề..." 
         class="search-input"
       />
@@ -26,38 +25,25 @@
     
     <div class="filter-row">
       <div class="filter-group">
-        <label for="filter-code">Mã template</label>
-        <input 
-          id="filter-code"
-          [(ngModel)]="filterCode" 
-          (ngModelChange)="onFilterChange()"
-          placeholder="Nhập mã template..." 
-          class="filter-input"
-        />
-      </div>
-      
-      <div class="filter-group">
         <label for="filter-status">Trạng thái</label>
         <select 
           id="filter-status"
           [(ngModel)]="filterStatus" 
-          (ngModelChange)="onFilterChange()"
+          (ngModelChange)="onFilter()"
           class="filter-select"
         >
-          <option [ngValue]="null">Tất cả</option>
-          <option [ngValue]="true">Bật</option>
-          <option [ngValue]="false">Tắt</option>
+          <option value="">Tất cả</option>
+          <option value="ACTIVE">Bật</option>
+          <option value="INACTIVE">Tắt</option>
         </select>
       </div>
-      
-     
       
       <div class="filter-group">
         <label for="page-size">Số mục/trang</label>
         <select 
           id="page-size"
-          [(ngModel)]="pageSize" 
-          (ngModelChange)="onFilterChange()"
+          [(ngModel)]="size" 
+          (ngModelChange)="onPageSizeChange($event)"
           class="filter-select"
         >
           <option [ngValue]="5">5</option>
@@ -68,8 +54,8 @@
       </div>
       
       <div class="filter-actions">
-        <button (click)="clearFilters()" class="clear-filters-btn">
-          Xóa bộ lọc
+        <button (click)="onFilter()" class="clear-filters-btn">
+          Lọc
         </button>
       </div>
     </div>
@@ -144,7 +130,7 @@
             <button (click)="edit(t); $event.stopPropagation()" class="action-btn edit-btn">
               <span class="action-text">Sửa</span>
             </button>
-            <button (click)="delete(t); $event.stopPropagation()" class="action-btn delete-btn">
+            <button (click)="delete(t.id); $event.stopPropagation()" class="action-btn delete-btn">
               <span class="action-text">Xóa</span>
             </button>
             <button (click)="viewDetail(t); $event.stopPropagation()" class="action-btn detail-btn">
@@ -164,12 +150,26 @@
   </div>
 
   <!-- Pagination -->
-  <app-pagination
-    *ngIf="paginationData && paginationData.totalPages > 1"
-    [currentPage]="paginationData.currentPage"
-    [totalPages]="paginationData.totalPages"
-    [totalItems]="paginationData.totalItems"
-    [size]="paginationData.size"
-    (pageChange)="onPageChange($event)"
-  ></app-pagination>
+  <div *ngIf="totalPages > 1" class="pagination-container">
+    <div class="pagination-info">
+      Hiển thị {{ (page * size) + 1 }} - {{ (page + 1) * size > totalItems ? totalItems : (page + 1) * size }} trong {{ totalItems }} mục
+    </div>
+    <div class="pagination-controls">
+      <button 
+        [disabled]="page === 0" 
+        (click)="onPageChange(page - 1)"
+        class="pagination-btn"
+      >
+        Trước
+      </button>
+      <span class="pagination-text">{{ page + 1 }} / {{ totalPages }}</span>
+      <button 
+        [disabled]="page >= totalPages - 1" 
+        (click)="onPageChange(page + 1)"
+        class="pagination-btn"
+      >
+        Sau
+      </button>
+    </div>
+  </div>
 </div> 

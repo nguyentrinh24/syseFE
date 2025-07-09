@@ -1,49 +1,43 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from '../../core/services/api.service';
-import { EmailTemplate } from '../../core/models/email-template.model';
-import { PaginationResponse, PaginationParams } from '../../core/models/pagination.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  errorCode?: string;
+  timestamp?: string;
+}
+
 @Injectable({ providedIn: 'root' })
-export class EmailTemplateService {
-  private url = '/api/email-templates';
-  constructor(private api: ApiService) {}
-  
-  getAll(): Observable<EmailTemplate[]> {
-    return this.api.get<EmailTemplate[]>(this.url);
+export class TemplateService {
+  private apiUrl = '/api/email-templates';
+  constructor(private http: HttpClient) {}
+
+  getPage(params: any = {}): Observable<ApiResponse<any>> {
+    let httpParams = new HttpParams();
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        httpParams = httpParams.set(key, params[key]);
+      }
+    });
+    return this.http.get<ApiResponse<any>>(this.apiUrl, { params: httpParams });
   }
-  
-  getWithPagination(params: PaginationParams): Observable<PaginationResponse<EmailTemplate>> {
-    const queryParams = new URLSearchParams();
-    
-    if (params.page !== undefined) queryParams.set('page', params.page.toString());
-    if (params.size !== undefined) queryParams.set('size', params.size.toString());
-    if (params.sortBy) queryParams.set('sortBy', params.sortBy);
-    if (params.sortDir) queryParams.set('sortDir', params.sortDir);
-    if (params.status !== undefined) queryParams.set('status', params.status.toString());
-    if (params.createdBy !== undefined) queryParams.set('createdBy', params.createdBy.toString());
-    if (params.code) queryParams.set('code', params.code);
-    if (params.search) queryParams.set('search', params.search);
-    
-    const queryString = queryParams.toString();
-    const url = queryString ? `${this.url}?${queryString}` : this.url;
-    
-    return this.api.get<PaginationResponse<EmailTemplate>>(url);
+
+  getById(id: number): Observable<ApiResponse<any>> {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/${id}`);
   }
-  
-  get(id: number): Observable<EmailTemplate> {
-    return this.api.get<EmailTemplate>(`${this.url}/${id}`);
+
+  create(data: any): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(this.apiUrl, data);
   }
-  
-  create(t: EmailTemplate): Observable<EmailTemplate> {
-    return this.api.post<EmailTemplate>(this.url, t);
+
+  update(id: number, data: any): Observable<ApiResponse<any>> {
+    return this.http.put<ApiResponse<any>>(`${this.apiUrl}/${id}`, data);
   }
-  
-  update(t: EmailTemplate): Observable<EmailTemplate> {
-    return this.api.put<EmailTemplate>(`${this.url}/${t.id}`, t);
-  }
-  
-  delete(id: number): Observable<void> {
-    return this.api.delete<void>(`${this.url}/${id}`);
+
+  delete(id: number): Observable<ApiResponse<any>> {
+    return this.http.delete<ApiResponse<any>>(`${this.apiUrl}/${id}`);
   }
 } 

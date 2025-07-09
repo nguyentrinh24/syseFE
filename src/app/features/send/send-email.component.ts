@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EmailTemplateService } from '../templates/template.service';
+import { TemplateService } from '../templates/template.service';
 import { MessageService } from './message.service';
 import { EmailTemplate } from '../../core/models/email-template.model';
 import { AuthService } from '../../core/services/auth.service';
@@ -24,13 +24,17 @@ export class SendEmailComponent implements OnInit {
   userId: number | null = null;
   previewHtml = '';
   constructor(
-    private templateService: EmailTemplateService,
+    private templateService: TemplateService,
     private messageService: MessageService,
     private authService: AuthService,
     private userService: UserService
   ) {}
   ngOnInit() {
-    this.templateService.getAll().subscribe((t: EmailTemplate[]) => this.templates = t);
+    this.templateService.getPage().subscribe((res: any) => {
+      if (res.success) {
+        this.templates = res.data.content || [];
+      }
+    });
     const username = this.authService.getUsername();
     if (username) {
       this.userService.getUsers().subscribe(users => {

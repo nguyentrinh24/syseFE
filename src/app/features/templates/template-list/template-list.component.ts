@@ -1,143 +1,119 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { EmailTemplateService } from '../template.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { EmailTemplate } from '../../../core/models/email-template.model';
-import { PaginationResponse, PaginationParams } from '../../../core/models/pagination.model';
-import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { Router } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { TemplateService, ApiResponse } from '../template.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule, NgForOf, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-template-list',
   templateUrl: './template-list.component.html',
   styleUrls: ['./template-list.component.scss'],
-  imports: [FormsModule, CommonModule, PaginationComponent],
-  standalone: true
+  standalone: true,
+  imports: [CommonModule, HttpClientModule, FormsModule, NgForOf, NgIf],
 })
-export class EmailTemplateListComponent implements OnInit {
-  templates: EmailTemplate[] = [];
-  paginationData: PaginationResponse<EmailTemplate> | null = null;
-  loading = false;
-  
-  // Filter properties
+export class TemplateListComponent implements OnInit {
+  templates: any[] = [];
   filterCode = '';
-  filterStatus: boolean | null = null;
-  filterSearch = '';
-  filterCreatedBy: number | null = null;
-  
-  // Pagination properties
-  currentPage = 0;
-  pageSize = 10;
-  sortBy = 'id';
-  sortDir: 'asc' | 'desc' = 'desc';
-  
-  // Search debounce
-  private searchSubject = new Subject<string>();
-  
+  filterStatus = '';
   isAdmin = false;
-  
-  constructor(
-    private service: EmailTemplateService, 
-    private auth: AuthService, 
-    private router: Router
-  ) {
-    // Setup search debounce
-    this.searchSubject.pipe(
-      debounceTime(500),
-      distinctUntilChanged()
-    ).subscribe(searchTerm => {
-      this.filterSearch = searchTerm;
-      this.currentPage = 0; // Reset to first page when searching
-      this.loadTemplates();
-    });
-  }
-  
+  loading = false;
+  error = '';
+  // Pagination
+  page = 0;
+  size = 10;
+  totalPages = 0;
+  totalItems = 0;
+  sortBy = 'id';
+  sortDir = 'asc';
+
+  constructor(public router: Router, private templateService: TemplateService, private auth: AuthService) {}
+
   ngOnInit() {
     this.isAdmin = this.auth.isAdmin();
     this.loadTemplates();
   }
-  
+
   loadTemplates() {
     this.loading = true;
-    
-    const params: PaginationParams = {
-      page: this.currentPage,
-      size: this.pageSize,
+    this.error = '';
+    const params: any = {
+      page: this.page,
+      size: this.size,
       sortBy: this.sortBy,
       sortDir: this.sortDir,
-      code: this.filterCode || undefined,
-      status: this.filterStatus !== null ? this.filterStatus : undefined,
-      search: this.filterSearch || undefined,
-      createdBy: this.filterCreatedBy || undefined
+      code: this.filterCode,
+      status: this.filterStatus !== '' ? (this.filterStatus === 'ACTIVE' ? true : false) : undefined
     };
-    
-    this.service.getWithPagination(params).subscribe({
-      next: (response) => {
-        this.paginationData = response;
-        this.templates = response.content;
+    this.templateService.getPage(params).subscribe({
+      next: (res: ApiResponse<any>) => {
+        if (res.success) {
+          this.templates = res.data.content || [];
+          this.totalPages = res.data.totalPages || 0;
+          this.totalItems = res.data.totalItems || 0;
+          this.size = res.data.size || this.size;
+          this.page = res.data.currentPage || this.page;
+        } else {
+          this.error = res.message || 'Không thể tải danh sách templates.';
+        }
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading templates:', error);
+        this.error = error?.error?.message || 'Không thể tải danh sách templates: ' + error.message;
         this.loading = false;
       }
     });
   }
-  
-  onPageChange(page: number) {
-    this.currentPage = page;
+
+  onPageChange(newPage: number) {
+    this.page = newPage;
     this.loadTemplates();
   }
-  
-  onSearchChange(searchTerm: string) {
-    this.searchSubject.next(searchTerm);
-  }
-  
-  onFilterChange() {
-    this.currentPage = 0; // Reset to first page when filtering
+
+  onPageSizeChange(newSize: number) {
+    this.size = newSize;
+    this.page = 0;
     this.loadTemplates();
   }
-  
+
   onSortChange(sortBy: string) {
-    if (this.sortBy === sortBy) {
-      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortBy = sortBy;
-      this.sortDir = 'desc';
-    }
+    this.sortBy = sortBy;
     this.loadTemplates();
   }
-  
-  clearFilters() {
-    this.filterCode = '';
-    this.filterStatus = null;
-    this.filterSearch = '';
-    this.filterCreatedBy = null;
-    this.currentPage = 0;
-    this.sortBy = 'id';
-    this.sortDir = 'desc';
+
+  onFilter() {
+    this.page = 0;
     this.loadTemplates();
   }
-  
-  edit(t: EmailTemplate) {
+
+  edit(t: any) {
     this.router.navigate(['/templates/edit', t.id]);
   }
-  
+
   create() {
     this.router.navigate(['/templates/create']);
   }
-  
-  delete(t: EmailTemplate) {
-    if (confirm('Bạn có chắc chắn muốn xóa template này?')) {
-      this.service.delete(t.id!).subscribe(() => {
-        this.loadTemplates(); // Reload current page
+
+  delete(id: number) {
+    if (confirm('Delete this template?')) {
+      this.templateService.delete(id).subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.loadTemplates();
+            alert(res.message || 'Xóa thành công!');
+          } else {
+            alert(res.message || 'Lỗi khi xóa template');
+          }
+        },
+        error: (error) => {
+          alert(error?.error?.message || 'Lỗi khi xóa template: ' + error.message);
+        }
       });
     }
   }
-  
-  viewDetail(t: EmailTemplate) {
+
+  viewDetail(t: any) {
     this.router.navigate(['/templates/detail', t.id]);
   }
 } 

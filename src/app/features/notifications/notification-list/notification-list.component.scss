@@ -76,7 +76,7 @@
     }
     .filter-select {
       cursor: pointer;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      
       background-position: right 12px center;
       background-repeat: no-repeat;
       background-size: 16px;
@@ -132,6 +132,37 @@
       color: #2d3748;
       font-weight: 600;
       font-size: 16px;
+    }
+  }
+}
+
+.template-actions {
+  .action-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+
+    &:hover {
+      background: #3182ce;
+      transform: translateY(-1px);
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    .action-icon {
+      font-size: 14px;
     }
   }
 }
@@ -268,3 +299,22 @@
     justify-content: center;
   }
 } 
+
+
+@media (max-width: 480px) {
+  .template-list-header {
+    .header-content h2 {
+      font-size: 24px;
+    }
+  }
+
+  .template-actions .action-btn {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 8px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

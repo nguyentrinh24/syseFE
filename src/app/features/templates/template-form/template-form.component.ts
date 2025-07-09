@@ -1,46 +1,172 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TemplateService, ApiResponse } from '../template.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
-import { EmailTemplateService } from '../template.service';
-import { EmailTemplate } from '../../../core/models/email-template.model';
 
 @Component({
   selector: 'app-template-form',
   templateUrl: './template-form.component.html',
   styleUrls: ['./template-form.component.scss'],
-  imports: [FormsModule, CommonModule],
-  standalone: true
+  standalone: true,
+  imports: [ReactiveFormsModule, FormsModule, CommonModule],
 })
-export class EmailTemplateFormComponent {
-  @Input() template: EmailTemplate = {name: '', code: '', subject: '', placeholders: '[]', content: '', status: true} as EmailTemplate;
-  get placeholdersStr() {
-    try {
-      const arr = JSON.parse(this.template.placeholders || '[]');
-      return Array.isArray(arr) ? arr.join(',') : '';
-    } catch {
-      return '';
+export class TemplateFormComponent implements OnInit {
+  form: FormGroup;
+  isEdit = false;
+  id: number | null = null;
+  placeholders: string[] = [];
+  variables: {[k: string]: string} = {};
+  previewHtml = '';
+  newPlaceholder = '';
+  loading = false;
+  error = '';
+  fieldErrors: {[key: string]: string} = {};
+
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    public router: Router,
+    private templateService: TemplateService
+  ) {
+    this.form = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      code: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      subject: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(255)]],
+      content: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10000)]],
+      placeholders: ['[]'],
+      status: [true]
+    });
+  }
+
+  ngOnInit() {
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    if (this.id) {
+      this.isEdit = true;
+      this.loadTemplate();
     }
+    this.setupFormListeners();
   }
-  set placeholdersStr(val: string) {
-    const arr = val.split(',').map(s => s.trim()).filter(Boolean);
-    this.template.placeholders = JSON.stringify(arr);
+
+  loadTemplate() {
+    this.loading = true;
+    this.templateService.getById(this.id!).subscribe({
+      next: (res: ApiResponse<any>) => {
+        if (res.success) {
+          const data = res.data;
+          this.form.patchValue(data);
+          this.placeholders = data.placeholders ? JSON.parse(data.placeholders) : [];
+          this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
+          this.placeholders.forEach(p => this.variables[p] = '');
+          this.renderPreview();
+        } else {
+          this.error = res.message || 'Không thể tải thông tin template.';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error?.error?.message || 'Không thể tải thông tin template: ' + error.message;
+        this.loading = false;
+      }
+    });
   }
-  constructor(private service: EmailTemplateService, private router: Router, private route: ActivatedRoute) {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.service.get(+id).subscribe(t => this.template = t);
-    }
+
+  setupFormListeners() {
+    this.form.get('placeholders')?.valueChanges.subscribe(val => {
+      try {
+        this.placeholders = val ? JSON.parse(val) : [];
+      } catch {
+        this.placeholders = [];
+      }
+      this.variables = {};
+      this.placeholders.forEach(p => this.variables[p] = '');
+      this.renderPreview();
+    });
+    this.form.get('content')?.valueChanges.subscribe(() => this.renderPreview());
   }
-  save() {
-    if (this.template.id) {
-      this.service.update(this.template).subscribe(() => this.goBack());
+
+  renderPreview() {
+    let html = this.form.get('content')?.value || '';
+    Object.keys(this.variables).forEach(key => {
+      const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+      html = html.replace(regex, this.variables[key] || '');
+    });
+    this.previewHtml = html;
+  }
+
+  onSubmit() {
+    if (this.form.invalid) return;
+    
+    this.loading = true;
+    this.error = '';
+    this.fieldErrors = {};
+
+    const data = {
+      name: this.form.get('name')?.value,
+      code: this.form.get('code')?.value,
+      subject: this.form.get('subject')?.value,
+      content: this.form.get('content')?.value,
+      placeholders: JSON.stringify(this.placeholders),
+      status: this.form.get('status')?.value
+    };
+
+    if (this.isEdit && this.id) {
+      this.templateService.update(this.id, data).subscribe({
+        next: (res: ApiResponse<any>) => {
+          if (res.success) {
+            this.router.navigate(['/templates']);
+          } else {
+            this.error = res.message || 'Lỗi khi cập nhật template.';
+            if (res.data?.fieldErrors) {
+              this.fieldErrors = res.data.fieldErrors;
+            }
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error?.error?.message || 'Lỗi khi cập nhật template: ' + error.message;
+          if (error?.error?.data?.fieldErrors) {
+            this.fieldErrors = error.error.data.fieldErrors;
+          }
+          this.loading = false;
+        }
+      });
     } else {
-      this.service.create(this.template).subscribe(() => this.goBack());
+      this.templateService.create(data).subscribe({
+        next: (res: ApiResponse<any>) => {
+          if (res.success) {
+            this.router.navigate(['/templates']);
+          } else {
+            this.error = res.message || 'Lỗi khi tạo template.';
+            if (res.data?.fieldErrors) {
+              this.fieldErrors = res.data.fieldErrors;
+            }
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error?.error?.message || 'Lỗi khi tạo template: ' + error.message;
+          if (error?.error?.data?.fieldErrors) {
+            this.fieldErrors = error.error.data.fieldErrors;
+          }
+          this.loading = false;
+        }
+      });
     }
   }
 
-  goBack() {
-    this.router.navigate(['/templates']);
+  addPlaceholder() {
+    const val = this.newPlaceholder?.trim();
+    if (val && !this.placeholders.includes(val)) {
+      this.placeholders.push(val);
+      this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
+    }
+    this.newPlaceholder = '';
+  }
+
+  removePlaceholder(i: number) {
+    this.placeholders.splice(i, 1);
+    this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
   }
 } 

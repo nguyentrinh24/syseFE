@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NotificationService } from '../notification.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { NotificationService, ApiResponse } from '../notification.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -20,6 +20,10 @@ export class NotificationFormComponent implements OnInit {
   variables: {[k: string]: string} = {};
   previewHtml = '';
   newPlaceholder = '';
+  loading = false;
+  error = '';
+  fieldErrors: {[key: string]: string} = {};
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -27,24 +31,47 @@ export class NotificationFormComponent implements OnInit {
     private notificationService: NotificationService
   ) {
     this.form = this.fb.group({
-      name: [''],
-      subject: [''],
-      content: [''],
-      placeholders: ['[]']
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      code: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
+      content: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10000)]],
+      placeholders: ['[]'],
+      status: [true]
     });
   }
+
   ngOnInit() {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
     if (this.id) {
       this.isEdit = true;
-      this.notificationService.getById(this.id).subscribe(data => {
-        this.form.patchValue(data);
-        this.placeholders = data.placeholders ? JSON.parse(data.placeholders) : [];
-        this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
-        this.placeholders.forEach(p => this.variables[p] = '');
-        this.renderPreview();
-      });
+      this.loadNotification();
     }
+    this.setupFormListeners();
+  }
+
+  loadNotification() {
+    this.loading = true;
+    this.notificationService.getById(this.id!).subscribe({
+      next: (res: ApiResponse<any>) => {
+        if (res.success) {
+          const data = res.data;
+          this.form.patchValue(data);
+          this.placeholders = data.placeholders ? JSON.parse(data.placeholders) : [];
+          this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
+          this.placeholders.forEach(p => this.variables[p] = '');
+          this.renderPreview();
+        } else {
+          this.error = res.message || 'Không thể tải thông tin notification.';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error?.error?.message || 'Không thể tải thông tin notification: ' + error.message;
+        this.loading = false;
+      }
+    });
+  }
+
+  setupFormListeners() {
     this.form.get('placeholders')?.valueChanges.subscribe(val => {
       try {
         this.placeholders = val ? JSON.parse(val) : [];
@@ -57,6 +84,7 @@ export class NotificationFormComponent implements OnInit {
     });
     this.form.get('content')?.valueChanges.subscribe(() => this.renderPreview());
   }
+
   renderPreview() {
     let html = this.form.get('content')?.value || '';
     Object.keys(this.variables).forEach(key => {
@@ -65,15 +93,67 @@ export class NotificationFormComponent implements OnInit {
     });
     this.previewHtml = html;
   }
+
   onSubmit() {
     if (this.form.invalid) return;
-    const data = {...this.form.value, placeholders: JSON.stringify(this.placeholders)};
+    
+    this.loading = true;
+    this.error = '';
+    this.fieldErrors = {};
+
+    const data = {
+      name: this.form.get('name')?.value,
+      code: this.form.get('code')?.value,
+      content: this.form.get('content')?.value,
+      placeholders: JSON.stringify(this.placeholders),
+      status: this.form.get('status')?.value
+    };
+
     if (this.isEdit && this.id) {
-      this.notificationService.update(this.id, data).subscribe(() => this.router.navigate(['/notifications']));
+      this.notificationService.update(this.id, data).subscribe({
+        next: (res: ApiResponse<any>) => {
+          if (res.success) {
+            this.router.navigate(['/notifications']);
+          } else {
+            this.error = res.message || 'Lỗi khi cập nhật notification.';
+            if (res.data?.fieldErrors) {
+              this.fieldErrors = res.data.fieldErrors;
+            }
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error?.error?.message || 'Lỗi khi cập nhật notification: ' + error.message;
+          if (error?.error?.data?.fieldErrors) {
+            this.fieldErrors = error.error.data.fieldErrors;
+          }
+          this.loading = false;
+        }
+      });
     } else {
-      this.notificationService.create(data).subscribe(() => this.router.navigate(['/notifications']));
+      this.notificationService.create(data).subscribe({
+        next: (res: ApiResponse<any>) => {
+          if (res.success) {
+            this.router.navigate(['/notifications']);
+          } else {
+            this.error = res.message || 'Lỗi khi tạo notification.';
+            if (res.data?.fieldErrors) {
+              this.fieldErrors = res.data.fieldErrors;
+            }
+          }
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error?.error?.message || 'Lỗi khi tạo notification: ' + error.message;
+          if (error?.error?.data?.fieldErrors) {
+            this.fieldErrors = error.error.data.fieldErrors;
+          }
+          this.loading = false;
+        }
+      });
     }
   }
+
   addPlaceholder() {
     const val = this.newPlaceholder?.trim();
     if (val && !this.placeholders.includes(val)) {
@@ -82,6 +162,7 @@ export class NotificationFormComponent implements OnInit {
     }
     this.newPlaceholder = '';
   }
+
   removePlaceholder(i: number) {
     this.placeholders.splice(i, 1);
     this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));

@@ -1,0 +1,41 @@
+<div class="template-form-container">
+  <div class="template-form-card">
+    <div class="card-header">
+      <h2>Chi tiết Notification</h2>
+    </div>
+    <div *ngIf="loading" class="loading">Đang tải...</div>
+    <div *ngIf="error" class="error">{{error}}</div>
+    <div class="template-form" *ngIf="notification && !loading">
+      <div class="form-section">
+        <div class="form-row">
+          <div class="form-group"><label>Tên:</label> <span class="name-text">{{notification.name}}</span></div>
+          <div class="form-group"><label>Mã:</label> <span class="code-badge">{{notification.code}}</span></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Trạng thái:</label> <span class="status-badge" [ngClass]="{'active': notification.status, 'inactive': !notification.status}">{{ notification.status ? 'BẬT' : 'TẮT' }}</span></div>
+          
+        </div>
+        <div class="form-group"><label>Biến động:</label>
+          <span *ngFor="let p of placeholders" class="code-badge">{{p}}</span>
+        </div>
+        <div class="form-group"><label>Nội dung HTML:</label>
+          <div class="notification-preview" [innerHTML]="notification.content"></div>
+        </div>
+        <div class="form-group" *ngIf="notification.createdBy">
+          <label>Người tạo:</label> {{notification.createdBy.fullName || notification.createdBy.username}}
+        </div>
+        <div class="form-group" *ngIf="notification.createdAt">
+          <label>Ngày tạo:</label> {{notification.createdAt | date:'dd/MM/yyyy HH:mm'}}
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="cancel-btn" (click)="goBack()">Quay lại</button>
+      </div>
+    </div>
+    <div *ngIf="!notification && !loading" class="empty-state">
+      <span class="empty-icon">📭</span>
+      <h3>Không tìm thấy notification.</h3>
+      <p>Notification không tồn tại hoặc đã bị xóa.</p>
+    </div>
+  </div>
+</div> 

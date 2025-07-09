@@ -1,45 +1,67 @@
-<div class="notification-form-container">
-  <h2>{{isEdit ? 'Edit' : 'Add'}} Notification Template</h2>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label>Name</label>
-      <input formControlName="name" placeholder="Enter name" />
+<div class="template-form-container">
+  <div class="template-form-card">
+    <div class="card-header">
+      <h2>{{isEdit ? 'Sửa' : 'Tạo'}} Notification Template</h2>
+      <p>{{isEdit ? 'Cập nhật thông tin notification' : 'Tạo notification mới'}}</p>
     </div>
-    <div class="form-group">
-      <label>Subject</label>
-      <input formControlName="subject" placeholder="Enter subject" />
+    <div *ngIf="loading" class="loading-state">
+      <p>Đang tải...</p>
     </div>
-    <div class="form-group">
-      <label>Content</label>
-      <textarea formControlName="content" rows="5" placeholder="Enter content"></textarea>
+    <div *ngIf="error" class="error-state">
+      <p style="color: red;">{{ error }}</p>
     </div>
-    <div class="form-group">
-      <label>Biến động (Placeholders)</label>
-      <div class="placeholder-tags">
-        <span *ngFor="let p of placeholders; let i = index" class="code-badge">
-          {{p}}
-          <button type="button" (click)="removePlaceholder(i)" class="remove-tag">&times;</button>
-        </span>
-        <input type="text" [(ngModel)]="newPlaceholder" (keydown.enter)="addPlaceholder(); $event.preventDefault();" placeholder="Thêm biến..." [ngModelOptions]="{standalone: true}" />
-        <button type="button" (click)="addPlaceholder()" class="add-tag">+</button>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="template-form" *ngIf="!loading">
+      <div class="form-section">
+        <h3>Thông tin cơ bản</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="notification-name">Tên Notification *</label>
+            <input id="notification-name" formControlName="name" placeholder="Nhập tên notification" class="form-control" [class.error]="form.get('name')?.invalid && form.get('name')?.touched" />
+          </div>
+          <div class="form-group">
+            <label for="notification-code">Mã Notification *</label>
+            <input id="notification-code" formControlName="code" placeholder="Nhập mã notification" [readonly]="isEdit" class="form-control" [class.error]="form.get('code')?.invalid && form.get('code')?.touched" />
+          </div>
+          <div class="form-group">
+            <label for="notification-status">Trạng thái</label>
+            <select id="notification-status" formControlName="status" class="select-control">
+              <option [ngValue]="true">Bật</option>
+              <option [ngValue]="false">Tắt</option>
+            </select>
+          </div>
+        </div>
+        <!-- Đã xóa trường Chủ đề (subject) -->
       </div>
-    </div>
-    <div class="form-group" *ngIf="placeholders.length">
-      <label>Nhập giá trị placeholders</label>
-      <div class="placeholders-grid">
-        <div class="form-group" *ngFor="let p of placeholders">
-          <label [for]="'ph-' + p">{{p}}</label>
-          <input [id]="'ph-' + p" [(ngModel)]="variables[p]" (ngModelChange)="renderPreview()" [placeholder]="p" [ngModelOptions]="{standalone: true}" />
+      <div class="form-section">
+        <h3>Cấu hình Notification</h3>
+        <div class="form-group">
+          <label for="notification-content">Nội dung HTML *</label>
+          <textarea id="notification-content" formControlName="content" placeholder="Nhập nội dung HTML của notification..." rows="12" class="form-control content-textarea" [class.error]="form.get('content')?.invalid && form.get('content')?.touched"></textarea>
+          <div class="notification-preview" [innerHTML]="form.get('content')?.value"></div>
+          <div class="error-message" *ngIf="form.get('content')?.invalid && form.get('content')?.touched">
+            <span *ngIf="form.get('content')?.errors?.['required']">Nội dung notification là bắt buộc</span>
+            <span *ngIf="form.get('content')?.errors?.['minlength']">Nội dung notification phải có ít nhất 10 ký tự</span>
+            <span *ngIf="form.get('content')?.errors?.['maxlength']">Nội dung notification không được quá 10000 ký tự</span>
+          </div>
+          <div class="error-message" *ngIf="fieldErrors['content']">
+            {{ fieldErrors['content'] }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="notification-placeholders">Placeholders</label>
+          <input id="notification-placeholders" formControlName="placeholders" placeholder="Tên, Email, Số điện thoại (phân cách bằng dấu phẩy)" class="form-control" />
+          <small class="help-text">Các biến có thể thay thế trong notification, phân cách bằng dấu phẩy</small>
+          <div class="error-message" *ngIf="fieldErrors['placeholders']">{{ fieldErrors['placeholders'] }}</div>
         </div>
       </div>
-    </div>
-    <div class="form-group" *ngIf="form.get('content')?.value">
-      <label>Preview nội dung động</label>
-      <div class="notification-preview" [innerHTML]="previewHtml"></div>
-    </div>
-    <div class="form-actions">
-      <button type="submit" class="save-btn">{{isEdit ? 'Update' : 'Create'}}</button>
-      <button type="button" class="cancel-btn" (click)="router.navigate(['/notifications'])">Cancel</button>
-    </div>
-  </form>
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="router.navigate(['/notifications'])">
+          <span class="btn-text">Hủy</span>
+        </button>
+        <button type="submit" class="save-btn" [disabled]="form.invalid || loading">
+          <span class="btn-text">{{isEdit ? 'Cập nhật' : 'Tạo'}}</span>
+        </button>
+      </div>
+    </form>
+  </div>
 </div> 

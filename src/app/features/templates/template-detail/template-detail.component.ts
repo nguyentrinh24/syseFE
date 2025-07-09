@@ -1,45 +1,48 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EmailTemplateService } from '../template.service';
-import { EmailTemplate } from '../../../core/models/email-template.model';
-import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { TemplateService, ApiResponse } from '../template.service';
 
 @Component({
   selector: 'app-template-detail',
-  templateUrl: './template-detail.component.html',
-  styleUrls: ['./template-detail.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule],
+  templateUrl: './template-detail.component.html',
+  styleUrls: ['./template-detail.component.scss']
 })
-export class EmailTemplateDetailComponent implements OnInit {
-  template?: EmailTemplate;
+export class TemplateDetailComponent implements OnInit {
+  template: any = null;
   placeholders: string[] = [];
-  variables: {[k: string]: string} = {};
-  previewHtml = '';
+  loading = false;
+  error = '';
 
-  constructor(private service: EmailTemplateService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private service: TemplateService, private router: Router) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.service.get(+id).subscribe(t => {
-        this.template = t;
-        this.placeholders = t.placeholders ? JSON.parse(t.placeholders) : [];
-        this.placeholders.forEach(p => this.variables[p] = '');
-        this.renderPreview();
-      });
+      this.loadTemplate(+id);
     }
   }
 
-  renderPreview() {
-    if (!this.template) return;
-    let html = this.template.content;
-    Object.keys(this.variables).forEach(key => {
-      const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
-      html = html.replace(regex, this.variables[key] || '');
+  loadTemplate(id: number) {
+    this.loading = true;
+    this.error = '';
+    this.service.getById(id).subscribe({
+      next: (res: ApiResponse<any>) => {
+        if (res.success) {
+          this.template = res.data;
+          this.placeholders = res.data.placeholders ? JSON.parse(res.data.placeholders) : [];
+        } else {
+          this.error = res.message || 'Không thể tải thông tin template.';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error?.error?.message || 'Không thể tải thông tin template: ' + error.message;
+        this.loading = false;
+      }
     });
-    this.previewHtml = html;
   }
 
   goBack() {
