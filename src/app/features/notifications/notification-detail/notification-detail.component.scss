@@ -12,6 +12,9 @@
 }
 
 .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 32px;
@@ -27,6 +30,27 @@
     margin: 0;
     opacity: 0.9;
     font-size: 16px;
+  }
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f0f0f0;
+    color: #333;
   }
 }
 

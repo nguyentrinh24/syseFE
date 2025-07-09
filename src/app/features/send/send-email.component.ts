@@ -6,6 +6,10 @@ import { MessageService } from './message.service';
 import { EmailTemplate } from '../../core/models/email-template.model';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TemplateDetailComponent } from '../template-detail/template-detail.component';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-send-email',
@@ -15,10 +19,11 @@ import { UserService } from '../../core/services/user.service';
   standalone: true
 })
 export class SendEmailComponent implements OnInit {
+  public Object = Object;
   templates: EmailTemplate[] = [];
   selectedCode = '';
-  placeholders: string[] = [];
-  variables: {[k: string]: string} = {};
+  placeholders: { [key: string]: string } = {};
+  variables: { [k: string]: string } = {};
   to = '';
   msg = '';
   userId: number | null = null;
@@ -27,7 +32,8 @@ export class SendEmailComponent implements OnInit {
     private templateService: TemplateService,
     private messageService: MessageService,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog
   ) {}
   ngOnInit() {
     this.templateService.getPage().subscribe((res: any) => {
@@ -45,9 +51,8 @@ export class SendEmailComponent implements OnInit {
   }
   onTemplateChange() {
     const t = this.templates.find(t => t.code === this.selectedCode);
-    this.placeholders = t ? JSON.parse(t.placeholders || '[]') : [];
-    this.variables = {};
-    this.placeholders.forEach(p => this.variables[p] = '');
+    this.placeholders = t ? t.placeholders || {} : {};
+    this.variables = { ...this.placeholders };
     this.previewHtml = '';
   }
   renderPreview() {
@@ -76,6 +81,13 @@ export class SendEmailComponent implements OnInit {
     }).subscribe({
       next: () => this.msg = 'Gửi thành công!',
       error: () => this.msg = 'Gửi thất bại!'
+    });
+  }
+
+  openDetail(id: number) {
+    this.dialog.open(TemplateDetailComponent, {
+      width: '600px',
+      data: { id }
     });
   }
 } 

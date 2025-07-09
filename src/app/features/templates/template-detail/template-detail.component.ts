@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TemplateService, ApiResponse } from '../template.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-template-detail',
@@ -12,14 +13,21 @@ import { TemplateService, ApiResponse } from '../template.service';
 })
 export class TemplateDetailComponent implements OnInit {
   template: any = null;
-  placeholders: string[] = [];
+  placeholders: { [key: string]: string } = {};
   loading = false;
   error = '';
+  public Object = Object;
 
-  constructor(private route: ActivatedRoute, private service: TemplateService, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private service: TemplateService, 
+    private router: Router,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<TemplateDetailComponent>
+  ) {}
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.data?.id || this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadTemplate(+id);
     }
@@ -32,7 +40,7 @@ export class TemplateDetailComponent implements OnInit {
       next: (res: ApiResponse<any>) => {
         if (res.success) {
           this.template = res.data;
-          this.placeholders = res.data.placeholders ? JSON.parse(res.data.placeholders) : [];
+          this.placeholders = res.data.placeholders || {};
         } else {
           this.error = res.message || 'Không thể tải thông tin template.';
         }
@@ -46,6 +54,6 @@ export class TemplateDetailComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/templates']);
+    this.dialogRef.close();
   }
 } 

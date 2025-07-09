@@ -25,10 +25,10 @@
         </div>
       </div>
 
-      <div class="form-section" *ngIf="placeholders.length">
+      <div class="form-section" *ngIf="Object.keys(placeholders).length">
         <h3>Thông tin thay thế</h3>
         <div class="placeholders-grid">
-          <div class="form-group" *ngFor="let p of placeholders">
+          <div class="form-group" *ngFor="let p of Object.keys(placeholders)">
             <label [for]="'placeholder-' + p">{{p}}</label>
             <input 
               [id]="'placeholder-' + p"

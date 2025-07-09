@@ -5,6 +5,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { TemplateDetailComponent } from '../template-detail/template-detail.component';
 
 @Component({
   selector: 'app-template-list',
@@ -28,7 +30,7 @@ export class TemplateListComponent implements OnInit {
   sortBy = 'id';
   sortDir = 'asc';
 
-  constructor(public router: Router, private templateService: TemplateService, private auth: AuthService) {}
+  constructor(public router: Router, private templateService: TemplateService, private auth: AuthService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.isAdmin = this.auth.isAdmin();
@@ -114,6 +116,9 @@ export class TemplateListComponent implements OnInit {
   }
 
   viewDetail(t: any) {
-    this.router.navigate(['/templates/detail', t.id]);
+    this.dialog.open(TemplateDetailComponent, {
+      width: '800px',
+      data: { id: t.id }
+    });
   }
 } 

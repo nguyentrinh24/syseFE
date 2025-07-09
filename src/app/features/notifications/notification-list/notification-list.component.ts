@@ -5,6 +5,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationDetailComponent } from '../notification-detail/notification-detail.component';
 
 @Component({
   selector: 'app-notification-list',
@@ -28,7 +30,7 @@ export class NotificationListComponent implements OnInit {
   sortBy = 'id';
   sortDir = 'asc';
 
-  constructor(public router: Router, private notificationService: NotificationService, private auth: AuthService) {}
+  constructor(public router: Router, private notificationService: NotificationService, private auth: AuthService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.isAdmin = this.auth.isAdmin();
@@ -113,6 +115,9 @@ export class NotificationListComponent implements OnInit {
   }
 
   viewDetail(n: any) {
-    this.router.navigate(['/notifications/detail', n.id]);
+    this.dialog.open(NotificationDetailComponent, {
+      width: '800px',
+      data: { id: n.id }
+    });
   }
 } 

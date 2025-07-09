@@ -6,7 +6,7 @@ export interface EmailTemplate {
   code: string;
   subject: string;
   content: string;
-  placeholders: string; // JSON string
+  placeholders: { [key: string]: string };
   status: boolean;
   createdBy?: User;
   createdAt?: string;

@@ -5,6 +5,7 @@ import { NotificationFormComponent } from './notification-form/notification-form
 import { NotificationDetailComponent } from './notification-detail/notification-detail.component';
 import { NotificationsRoutingModule } from './notifications-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     NotificationFormComponent,
     NotificationDetailComponent,
     NotificationsRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatDialogModule
   ]
 })
 export class NotificationsModule {} 

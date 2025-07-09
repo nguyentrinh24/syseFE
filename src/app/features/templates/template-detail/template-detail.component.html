@@ -2,6 +2,7 @@
   <div class="template-form-card">
     <div class="card-header">
       <h2>Chi tiết Email Template</h2>
+      <button class="close-btn" (click)="goBack()">×</button>
     </div>
     <div *ngIf="loading" class="loading">Đang tải...</div>
     <div *ngIf="error" class="error">{{error}}</div>
@@ -16,7 +17,7 @@
           <div class="form-group"><label>Tiêu đề:</label> {{template.subject}}</div>
         </div>
         <div class="form-group"><label>Biến động:</label>
-          <span *ngFor="let p of placeholders" class="code-badge">{{p}}</span>
+          <span *ngFor="let p of Object.keys(placeholders)" class="code-badge">{{p}}</span>
         </div>
         <div class="form-group"><label>Nội dung HTML:</label>
           <div class="notification-preview" [innerHTML]="template.content"></div>

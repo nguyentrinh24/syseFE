@@ -16,8 +16,8 @@ export class TemplateFormComponent implements OnInit {
   form: FormGroup;
   isEdit = false;
   id: number | null = null;
-  placeholders: string[] = [];
-  variables: {[k: string]: string} = {};
+  placeholders: { [key: string]: string } = {};
+  variables: { [k: string]: string } = {};
   previewHtml = '';
   newPlaceholder = '';
   loading = false;
@@ -56,9 +56,9 @@ export class TemplateFormComponent implements OnInit {
         if (res.success) {
           const data = res.data;
           this.form.patchValue(data);
-          this.placeholders = data.placeholders ? JSON.parse(data.placeholders) : [];
-          this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
-          this.placeholders.forEach(p => this.variables[p] = '');
+          this.placeholders = data.placeholders || {};
+          this.form.get('placeholders')?.setValue(this.placeholders);
+          Object.keys(this.placeholders).forEach(p => this.variables[p] = this.placeholders[p] || '');
           this.renderPreview();
         } else {
           this.error = res.message || 'Không thể tải thông tin template.';
@@ -74,13 +74,9 @@ export class TemplateFormComponent implements OnInit {
 
   setupFormListeners() {
     this.form.get('placeholders')?.valueChanges.subscribe(val => {
-      try {
-        this.placeholders = val ? JSON.parse(val) : [];
-      } catch {
-        this.placeholders = [];
-      }
+      this.placeholders = val || {};
       this.variables = {};
-      this.placeholders.forEach(p => this.variables[p] = '');
+      Object.keys(this.placeholders).forEach(p => this.variables[p] = this.placeholders[p] || '');
       this.renderPreview();
     });
     this.form.get('content')?.valueChanges.subscribe(() => this.renderPreview());
@@ -107,7 +103,7 @@ export class TemplateFormComponent implements OnInit {
       code: this.form.get('code')?.value,
       subject: this.form.get('subject')?.value,
       content: this.form.get('content')?.value,
-      placeholders: JSON.stringify(this.placeholders),
+      placeholders: this.placeholders,
       status: this.form.get('status')?.value
     };
 
@@ -158,15 +154,15 @@ export class TemplateFormComponent implements OnInit {
 
   addPlaceholder() {
     const val = this.newPlaceholder?.trim();
-    if (val && !this.placeholders.includes(val)) {
-      this.placeholders.push(val);
-      this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
+    if (val && !(val in this.placeholders)) {
+      this.placeholders[val] = '';
+      this.form.get('placeholders')?.setValue(this.placeholders);
     }
     this.newPlaceholder = '';
   }
 
-  removePlaceholder(i: number) {
-    this.placeholders.splice(i, 1);
-    this.form.get('placeholders')?.setValue(JSON.stringify(this.placeholders));
+  removePlaceholder(key: string) {
+    delete this.placeholders[key];
+    this.form.get('placeholders')?.setValue(this.placeholders);
   }
 } 
