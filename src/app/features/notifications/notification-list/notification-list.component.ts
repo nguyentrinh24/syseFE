@@ -7,6 +7,7 @@ import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationDetailComponent } from '../notification-detail/notification-detail.component';
+import { NotificationFormComponent } from '../notification-form/notification-form.component';
 
 @Component({
   selector: 'app-notification-list',
@@ -90,11 +91,27 @@ export class NotificationListComponent implements OnInit {
   }
 
   edit(n: any) {
-    this.router.navigate(['/notifications/edit', n.id]);
+    const dialogRef = this.dialog.open(NotificationFormComponent, {
+      width: '800px',
+      data: { id: n.id }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'updated') {
+        this.loadNotifications();
+      }
+    });
   }
 
   create() {
-    this.router.navigate(['/notifications/new']);
+    const dialogRef = this.dialog.open(NotificationFormComponent, {
+      width: '800px',
+      data: {}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'created') {
+        this.loadNotifications();
+      }
+    });
   }
 
   delete(id: number) {

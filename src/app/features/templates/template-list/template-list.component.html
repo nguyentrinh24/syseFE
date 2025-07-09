@@ -4,7 +4,7 @@
       <h2>Danh sách Email Template</h2>
       <p>Quản lý các template email trong hệ thống</p>
     </div>
-    <button *ngIf="isAdmin" (click)="create()" class="create-btn">
+    <button *ngIf="isAdmin" (click)="create()" class="create-btn" type="button">
       <span class="btn-text">Tạo mới</span>
     </button>
   </div>
@@ -127,7 +127,7 @@
             <span class="date-text">{{t.createdAt | date:'dd/MM/yyyy HH:mm'}}</span>
           </td>
           <td *ngIf="isAdmin" class="template-actions">
-            <button (click)="edit(t); $event.stopPropagation()" class="action-btn edit-btn">
+            <button (click)="edit(t); $event.stopPropagation()" class="action-btn edit-btn" type="button">
               <span class="action-text">Sửa</span>
             </button>
             <button (click)="delete(t.id); $event.stopPropagation()" class="action-btn delete-btn">

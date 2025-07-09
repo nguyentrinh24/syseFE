@@ -7,6 +7,7 @@ import { CommonModule, NgForOf, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { TemplateDetailComponent } from '../template-detail/template-detail.component';
+import { TemplateFormComponent } from '../template-form/template-form.component';
 
 @Component({
   selector: 'app-template-list',
@@ -90,11 +91,27 @@ export class TemplateListComponent implements OnInit {
   }
 
   edit(t: any) {
-    this.router.navigate(['/templates/edit', t.id]);
+    const dialogRef = this.dialog.open(TemplateFormComponent, {
+      width: '800px',
+      data: { id: t.id }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'updated') {
+        this.loadTemplates();
+      }
+    });
   }
 
   create() {
-    this.router.navigate(['/templates/create']);
+    const dialogRef = this.dialog.open(TemplateFormComponent, {
+      width: '800px',
+      data: {}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'created') {
+        this.loadTemplates();
+      }
+    });
   }
 
   delete(id: number) {

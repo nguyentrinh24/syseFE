@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TemplateService, ApiResponse } from '../template.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-template-form',
@@ -28,7 +29,9 @@ export class TemplateFormComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     public router: Router,
-    private templateService: TemplateService
+    private templateService: TemplateService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<TemplateFormComponent>
   ) {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -41,7 +44,7 @@ export class TemplateFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.id = this.data?.id ?? Number(this.route.snapshot.paramMap.get('id'));
     if (this.id) {
       this.isEdit = true;
       this.loadTemplate();
@@ -111,7 +114,7 @@ export class TemplateFormComponent implements OnInit {
       this.templateService.update(this.id, data).subscribe({
         next: (res: ApiResponse<any>) => {
           if (res.success) {
-            this.router.navigate(['/templates']);
+            this.dialogRef.close('updated');
           } else {
             this.error = res.message || 'Lỗi khi cập nhật template.';
             if (res.data?.fieldErrors) {
@@ -132,7 +135,7 @@ export class TemplateFormComponent implements OnInit {
       this.templateService.create(data).subscribe({
         next: (res: ApiResponse<any>) => {
           if (res.success) {
-            this.router.navigate(['/templates']);
+            this.dialogRef.close('created');
           } else {
             this.error = res.message || 'Lỗi khi tạo template.';
             if (res.data?.fieldErrors) {

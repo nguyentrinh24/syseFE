@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationService, ApiResponse } from '../notification.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-notification-form',
@@ -28,7 +29,9 @@ export class NotificationFormComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     public router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialogRef: MatDialogRef<NotificationFormComponent>
   ) {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -40,7 +43,7 @@ export class NotificationFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = Number(this.route.snapshot.paramMap.get('id'));
+    this.id = this.data?.id ?? Number(this.route.snapshot.paramMap.get('id'));
     if (this.id) {
       this.isEdit = true;
       this.loadNotification();
@@ -109,7 +112,7 @@ export class NotificationFormComponent implements OnInit {
       this.notificationService.update(this.id, data).subscribe({
         next: (res: ApiResponse<any>) => {
           if (res.success) {
-            this.router.navigate(['/notifications']);
+            this.dialogRef.close('updated');
           } else {
             this.error = res.message || 'Lỗi khi cập nhật notification.';
             if (res.data?.fieldErrors) {
@@ -130,7 +133,7 @@ export class NotificationFormComponent implements OnInit {
       this.notificationService.create(data).subscribe({
         next: (res: ApiResponse<any>) => {
           if (res.success) {
-            this.router.navigate(['/notifications']);
+            this.dialogRef.close('created');
           } else {
             this.error = res.message || 'Lỗi khi tạo notification.';
             if (res.data?.fieldErrors) {

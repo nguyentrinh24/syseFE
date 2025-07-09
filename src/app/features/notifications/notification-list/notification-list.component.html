@@ -4,7 +4,7 @@
       <h2>Notification Templates</h2>
       <p>Quản lý các template Notification trong hệ thống</p>
     </div>
-    <button class="add-btn" *ngIf="isAdmin" (click)="create()"> Tạo mới</button>
+    <button class="add-btn" *ngIf="isAdmin" (click)="create()" type="button"> Tạo mới</button>
   </div>
 
   <!-- Loading state -->
@@ -50,7 +50,7 @@
           <td><span class="status-badge" [ngClass]="{'active': n.status, 'inactive': !n.status}">{{ n.status ? 'BẬT' : 'TẮT' }}</span></td>
           <td><span class="date-text">{{n.createdAt | date:'dd/MM/yyyy HH:mm'}}</span></td>
           <td class="template-actions">
-            <button class="action-btn" *ngIf="isAdmin" (click)="edit(n)">Sửa</button>
+            <button class="action-btn" *ngIf="isAdmin" (click)="edit(n)" type="button">Sửa</button>
             <button class="action-btn" *ngIf="isAdmin" (click)="delete(n.id)">Xóa</button>
             <button class="action-btn" (click)="viewDetail(n)">Chi tiết</button>
           </td>

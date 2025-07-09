@@ -7,7 +7,7 @@ import { EmailTemplate } from '../../core/models/email-template.model';
 import { AuthService } from '../../core/services/auth.service';
 import { UserService } from '../../core/services/user.service';
 import { MatDialog } from '@angular/material/dialog';
-import { TemplateDetailComponent } from '../template-detail/template-detail.component';
+import { TemplateDetailComponent } from '../templates/template-detail/template-detail.component';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
 
