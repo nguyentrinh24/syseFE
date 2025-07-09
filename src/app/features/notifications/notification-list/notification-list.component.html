@@ -6,7 +6,24 @@
     </div>
     <button class="add-btn" *ngIf="isAdmin" (click)="create()">+ Add New</button>
   </div>
-  <div class="filters-section">
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-state">
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error-state">
+    <p style="color: red;">{{ error }}</p>
+    <button (click)="loadNotifications()">Thử lại</button>
+  </div>
+
+  <!-- Debug info -->
+  <div *ngIf="!loading && !error" class="debug-info">
+    <p>Số lượng notifications: {{ notifications.length }}</p>
+  </div>
+
+  <div class="filters-section" *ngIf="!loading && !error">
     <div class="filter-group">
       <input class="filter-input" [(ngModel)]="filterCode" placeholder="Lọc theo mã " />
     </div>
@@ -18,7 +35,7 @@
       </select>
     </div>
   </div>
-  <div class="table-container">
+  <div class="table-container" *ngIf="!loading && !error">
     <table class="notification-table" *ngIf="filteredNotifications().length > 0; else emptyBlock">
       <thead>
         <tr>

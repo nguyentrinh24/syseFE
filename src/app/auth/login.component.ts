@@ -21,7 +21,10 @@ export class LoginComponent {
       next: () => {
         this.router.navigate(['/templates']);
       },
-      error: err => this.error = 'Sai tài khoản hoặc mật khẩu!'
+      error: err => {
+        this.auth.logout(); // Xóa token, role, username nếu có token cũ
+        this.error = 'Sai tài khoản hoặc mật khẩu!';
+      }
     });
   }
 } 

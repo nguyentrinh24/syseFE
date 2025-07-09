@@ -10,43 +10,117 @@
     </button>
   </div>
 
+  <!-- Search and Filters Section -->
   <div class="filters-section">
-    <div class="filter-group">
-      <label for="filter-code">Lọc theo mã</label>
+    <div class="search-group">
+      <label for="search-input">Tìm kiếm</label>
       <input 
-        id="filter-code"
-        [(ngModel)]="filterCode" 
-        placeholder="Nhập mã template..." 
-        class="filter-input"
+        id="search-input"
+        type="text"
+        [value]="filterSearch"
+        (input)="onSearchChange($any($event.target).value)"
+        placeholder="Tìm theo tên, mã hoặc chủ đề..." 
+        class="search-input"
       />
     </div>
     
-    <div class="filter-group">
-      <label for="filter-status">Trạng thái</label>
-      <select 
-        id="filter-status"
-        [(ngModel)]="filterStatus" 
-        class="filter-select"
-      >
-        <option value="">Tất cả</option>
-        <option value="ACTIVE">Bật</option>
-        <option value="INACTIVE">Tắt</option>
-      </select>
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filter-code">Mã template</label>
+        <input 
+          id="filter-code"
+          [(ngModel)]="filterCode" 
+          (ngModelChange)="onFilterChange()"
+          placeholder="Nhập mã template..." 
+          class="filter-input"
+        />
+      </div>
+      
+      <div class="filter-group">
+        <label for="filter-status">Trạng thái</label>
+        <select 
+          id="filter-status"
+          [(ngModel)]="filterStatus" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-select"
+        >
+          <option [ngValue]="null">Tất cả</option>
+          <option [ngValue]="true">Bật</option>
+          <option [ngValue]="false">Tắt</option>
+        </select>
+      </div>
+      
+     
+      
+      <div class="filter-group">
+        <label for="page-size">Số mục/trang</label>
+        <select 
+          id="page-size"
+          [(ngModel)]="pageSize" 
+          (ngModelChange)="onFilterChange()"
+          class="filter-select"
+        >
+          <option [ngValue]="5">5</option>
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
+      
+      <div class="filter-actions">
+        <button (click)="clearFilters()" class="clear-filters-btn">
+          Xóa bộ lọc
+        </button>
+      </div>
     </div>
   </div>
 
-  <div class="table-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Table Container -->
+  <div *ngIf="!loading" class="table-container">
     <table class="template-table">
       <thead>
         <tr>
-          <th>Tên Template</th>
-          <th>Mã</th>
-          <th>Trạng thái</th>
+          <th (click)="onSortChange('name')" class="sortable-header">
+            Tên Template
+            <span class="sort-icon" *ngIf="sortBy === 'name'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSortChange('code')" class="sortable-header">
+            Mã
+            <span class="sort-icon" *ngIf="sortBy === 'code'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSortChange('subject')" class="sortable-header">
+            Chủ đề
+            <span class="sort-icon" *ngIf="sortBy === 'subject'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSortChange('status')" class="sortable-header">
+            Trạng thái
+            <span class="sort-icon" *ngIf="sortBy === 'status'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="onSortChange('createdAt')" class="sortable-header">
+            Ngày tạo
+            <span class="sort-icon" *ngIf="sortBy === 'createdAt'">
+              {{ sortDir === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
           <th *ngIf="isAdmin">Hành động</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let t of filteredTemplates()" class="table-row" (click)="viewDetail(t)" style="cursor:pointer;">
+        <tr *ngFor="let t of templates" class="table-row" (click)="viewDetail(t)" style="cursor:pointer;">
           <td class="template-name">
             <div class="name-content">
               <span class="name-text">{{t.name}}</span>
@@ -55,10 +129,16 @@
           <td class="template-code">
             <code>{{t.code}}</code>
           </td>
+          <td class="template-subject">
+            <span class="subject-text">{{t.subject}}</span>
+          </td>
           <td class="template-status">
             <span class="status-badge" [class]="t.status === true ? 'active' : 'inactive'">
               {{t.status === true ? 'Bật' : 'Tắt'}}
             </span>
+          </td>
+          <td class="template-date">
+            <span class="date-text">{{t.createdAt | date:'dd/MM/yyyy HH:mm'}}</span>
           </td>
           <td *ngIf="isAdmin" class="template-actions">
             <button (click)="edit(t); $event.stopPropagation()" class="action-btn edit-btn">
@@ -75,10 +155,21 @@
       </tbody>
     </table>
 
-    <div *ngIf="filteredTemplates().length === 0" class="empty-state">
+    <!-- Empty State -->
+    <div *ngIf="templates.length === 0 && !loading" class="empty-state">
       <div class="empty-icon"></div>
       <h3>Không tìm thấy template</h3>
       <p>Không có template nào phù hợp với bộ lọc hiện tại</p>
     </div>
   </div>
+
+  <!-- Pagination -->
+  <app-pagination
+    *ngIf="paginationData && paginationData.totalPages > 1"
+    [currentPage]="paginationData.currentPage"
+    [totalPages]="paginationData.totalPages"
+    [totalItems]="paginationData.totalItems"
+    [size]="paginationData.size"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
 </div> 
