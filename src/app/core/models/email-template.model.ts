@@ -10,4 +10,12 @@ export interface EmailTemplate {
   status: boolean;
   createdBy?: User;
   createdAt?: string;
+}
+
+export interface EmailTemplateDetail {
+  template: EmailTemplate;
+  renderedContent: string;
+  renderedSubject: string;
+  placeholders: { [key: string]: string };
+  availablePlaceholders: { [key: string]: string };
 } 

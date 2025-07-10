@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { EmailTemplateDetail } from '../../core/models/email-template.model';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -27,6 +28,10 @@ export class TemplateService {
 
   getById(id: number): Observable<ApiResponse<any>> {
     return this.http.get<ApiResponse<any>>(`${this.apiUrl}/${id}`);
+  }
+
+  getDetailWithRender(id: number): Observable<ApiResponse<EmailTemplateDetail>> {
+    return this.http.get<ApiResponse<EmailTemplateDetail>>(`${this.apiUrl}/${id}/detail-with-render`);
   }
 
   create(data: any): Observable<ApiResponse<any>> {

@@ -86,7 +86,8 @@ export class SendEmailComponent implements OnInit {
 
   openDetail(id: number) {
     this.dialog.open(TemplateDetailComponent, {
-      width: '600px',
+      width: '900px',
+      maxHeight: '90vh',
       data: { id }
     });
   }

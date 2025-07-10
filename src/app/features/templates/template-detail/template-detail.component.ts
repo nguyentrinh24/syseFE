@@ -2,6 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TemplateService, ApiResponse } from '../template.service';
+import { EmailTemplateDetail } from '../../../core/models/email-template.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
@@ -12,8 +13,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./template-detail.component.scss']
 })
 export class TemplateDetailComponent implements OnInit {
-  template: any = null;
-  placeholders: { [key: string]: string } = {};
+  templateDetail: EmailTemplateDetail | null = null;
   loading = false;
   error = '';
   public Object = Object;
@@ -29,18 +29,17 @@ export class TemplateDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.data?.id || this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.loadTemplate(+id);
+      this.loadTemplateDetail(+id);
     }
   }
 
-  loadTemplate(id: number) {
+  loadTemplateDetail(id: number) {
     this.loading = true;
     this.error = '';
-    this.service.getById(id).subscribe({
-      next: (res: ApiResponse<any>) => {
+    this.service.getDetailWithRender(id).subscribe({
+      next: (res: ApiResponse<EmailTemplateDetail>) => {
         if (res.success) {
-          this.template = res.data;
-          this.placeholders = res.data.placeholders || {};
+          this.templateDetail = res.data;
         } else {
           this.error = res.message || 'Không thể tải thông tin template.';
         }

@@ -134,7 +134,8 @@ export class TemplateListComponent implements OnInit {
 
   viewDetail(t: any) {
     this.dialog.open(TemplateDetailComponent, {
-      width: '800px',
+      width: '900px',
+      maxHeight: '90vh',
       data: { id: t.id }
     });
   }

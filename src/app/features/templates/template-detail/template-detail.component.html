@@ -6,34 +6,43 @@
     </div>
     <div *ngIf="loading" class="loading">Đang tải...</div>
     <div *ngIf="error" class="error">{{error}}</div>
-    <div class="template-form" *ngIf="template && !loading">
+    <div class="template-form" *ngIf="templateDetail && !loading">
       <div class="form-section">
         <div class="form-row">
-          <div class="form-group"><label>Tên:</label> <span class="name-text">{{template.name}}</span></div>
-          <div class="form-group"><label>Mã:</label> <span class="code-badge">{{template.code}}</span></div>
+          <div class="form-group"><label>Tên:</label> <span class="name-text">{{templateDetail.template.name}}</span></div>
+          <div class="form-group"><label>Mã:</label> <span class="code-badge">{{templateDetail.template.code}}</span></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Trạng thái:</label> <span class="status-badge" [ngClass]="{'active': template.status, 'inactive': !template.status}">{{ template.status ? 'BẬT' : 'TẮT' }}</span></div>
-          <div class="form-group"><label>Tiêu đề:</label> {{template.subject}}</div>
+          <div class="form-group"><label>Trạng thái:</label> <span class="status-badge" [ngClass]="{'active': templateDetail.template.status, 'inactive': !templateDetail.template.status}">{{ templateDetail.template.status ? 'BẬT' : 'TẮT' }}</span></div>
+          <div class="form-group"><label>Tiêu đề gốc:</label> {{templateDetail.template.subject}}</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Tiêu đề đã render:</label> {{templateDetail.renderedSubject}}</div>
         </div>
         <div class="form-group"><label>Biến động:</label>
-          <span *ngFor="let p of Object.keys(placeholders)" class="code-badge">{{p}}</span>
+          <span *ngFor="let p of Object.keys(templateDetail.placeholders)" class="code-badge">{{p}}</span>
         </div>
-        <div class="form-group"><label>Nội dung HTML:</label>
-          <div class="notification-preview" [innerHTML]="template.content"></div>
+        <div class="form-group"><label>Biến động có sẵn:</label>
+          <span *ngFor="let p of Object.keys(templateDetail.availablePlaceholders)" class="code-badge available">{{p}}</span>
         </div>
-        <div class="form-group" *ngIf="template.createdBy">
-          <label>Người tạo:</label> {{template.createdBy.fullName || template.createdBy.username}}
+        <div class="form-group"><label>Nội dung HTML gốc:</label>
+          <div class="notification-preview" [innerHTML]="templateDetail.template.content"></div>
         </div>
-        <div class="form-group" *ngIf="template.createdAt">
-          <label>Ngày tạo:</label> {{template.createdAt | date:'dd/MM/yyyy HH:mm'}}
+        <div class="form-group"><label>Nội dung HTML đã render:</label>
+          <div class="notification-preview rendered" [innerHTML]="templateDetail.renderedContent"></div>
+        </div>
+        <div class="form-group" *ngIf="templateDetail.template.createdBy">
+          <label>Người tạo:</label> {{templateDetail.template.createdBy.fullName || templateDetail.template.createdBy.username}}
+        </div>
+        <div class="form-group" *ngIf="templateDetail.template.createdAt">
+          <label>Ngày tạo:</label> {{templateDetail.template.createdAt | date:'dd/MM/yyyy HH:mm'}}
         </div>
       </div>
       <div class="form-actions">
         <button class="cancel-btn" (click)="goBack()">Quay lại</button>
       </div>
     </div>
-    <div *ngIf="!template && !loading" class="empty-state">
+    <div *ngIf="!templateDetail && !loading" class="empty-state">
       <span class="empty-icon">📭</span>
       <h3>Không tìm thấy template.</h3>
       <p>Template không tồn tại hoặc đã bị xóa.</p>
