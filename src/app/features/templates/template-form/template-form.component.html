@@ -2,21 +2,26 @@
   <div class="template-form-card">
     <div class="card-header">
       <h2>{{isEdit ? 'Sửa' : 'Tạo'}} Email Template</h2>
-      <p>{{isEdit ? 'Cập nhật thông tin template' : 'Tạo template email mới'}}</p>
+      <button class="close-btn" (click)="closeDialog()">×</button>
     </div>
 
     <div *ngIf="loading" class="loading-state">
-      <p>Đang tải...</p>
+      <p>🔄 {{isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}}</p>
+    </div>
+
+    <!-- Success state -->
+    <div *ngIf="!loading && !error && (form.get('name')?.value || form.get('code')?.value)" class="success-state">
+      <p>✅ {{isEdit ? 'Cập nhật thành công!' : 'Tạo thành công!'}}</p>
     </div>
 
     <!-- Error state -->
     <div *ngIf="error" class="error-state">
-      <p style="color: red;">{{ error }}</p>
+      <p>{{ error }}</p>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="template-form" *ngIf="!loading">
       <div class="form-section">
-        <h3>Thông tin cơ bản</h3>
+        <h3>📝 Thông tin cơ bản</h3>
         
         <div class="form-row">
           <div class="form-group">
@@ -24,12 +29,18 @@
             <input 
               id="template-name"
               formControlName="name"
-              placeholder="Nhập tên template" 
+              placeholder="Ví dụ: Order Confirmation" 
               class="form-control"
               [class.error]="form.get('name')?.invalid && form.get('name')?.touched"
-             
             />
-          
+            <div class="error-message" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+              <span *ngIf="form.get('name')?.errors?.['required']">Tên template là bắt buộc</span>
+              <span *ngIf="form.get('name')?.errors?.['minlength']">Tên template phải có ít nhất 2 ký tự</span>
+              <span *ngIf="form.get('name')?.errors?.['maxlength']">Tên template không được quá 100 ký tự</span>
+            </div>
+            <div class="error-message" *ngIf="fieldErrors['name']">
+              {{ fieldErrors['name'] }}
+            </div>
           </div>
 
           <div class="form-group">
@@ -37,7 +48,7 @@
             <input 
               id="template-code"
               formControlName="code"
-              placeholder="Nhập mã template" 
+              placeholder="Ví dụ: ORDER_CONFIRM" 
               [readonly]="isEdit"
               class="form-control"
               [class.error]="form.get('code')?.invalid && form.get('code')?.touched"
@@ -61,7 +72,7 @@
           <input 
             id="template-subject"
             formControlName="subject"
-            placeholder="Nhập tiêu đề email" 
+            placeholder="Ví dụ: Xác nhận đơn hàng {orderNumber}" 
             class="form-control"
             [class.error]="form.get('subject')?.invalid && form.get('subject')?.touched"
           />
@@ -74,26 +85,6 @@
             {{ fieldErrors['subject'] }}
           </div>
         </div>
-      </div>
-
-      <div class="form-section">
-        <h3>Cấu hình Template</h3>
-        
-        <div class="form-group">
-          <label for="template-placeholders">Placeholders</label>
-          <input 
-            id="template-placeholders"
-            formControlName="placeholders"
-            placeholder="Tên, Email, Số điện thoại (phân cách bằng dấu phẩy)" 
-            class="form-control"
-          />
-          <small class="help-text">
-            Các biến có thể thay thế trong template, phân cách bằng dấu phẩy
-          </small>
-          <div class="error-message" *ngIf="fieldErrors['placeholders']">
-            {{ fieldErrors['placeholders'] }}
-          </div>
-        </div>
 
         <div class="form-group">
           <label for="template-status">Trạng thái</label>
@@ -102,8 +93,8 @@
             formControlName="status"
             class="form-control"
           >
-            <option [ngValue]="true">Bật</option>
-            <option [ngValue]="false">Tắt</option>
+            <option [ngValue]="true">✅ Bật</option>
+            <option [ngValue]="false">❌ Tắt</option>
           </select>
           <div class="error-message" *ngIf="fieldErrors['status']">
             {{ fieldErrors['status'] }}
@@ -112,7 +103,7 @@
       </div>
 
       <div class="form-section">
-        <h3>Nội dung Template</h3>
+        <h3>📄 Nội dung Template</h3>
         
         <div class="form-group">
           <label for="template-content">Nội dung HTML *</label>
@@ -124,7 +115,6 @@
             class="form-control content-textarea"
             [class.error]="form.get('content')?.invalid && form.get('content')?.touched"
           ></textarea>
-          <div class="notification-preview" [innerHTML]="form.get('content')?.value"></div>
           <div class="error-message" *ngIf="form.get('content')?.invalid && form.get('content')?.touched">
             <span *ngIf="form.get('content')?.errors?.['required']">Nội dung template là bắt buộc</span>
             <span *ngIf="form.get('content')?.errors?.['minlength']">Nội dung template phải có ít nhất 10 ký tự</span>
@@ -133,17 +123,57 @@
           <div class="error-message" *ngIf="fieldErrors['content']">
             {{ fieldErrors['content'] }}
           </div>
+          <small class="help-text">
+            Sử dụng cú pháp <b>{{ '{' }}{{ '{ten_bien}' }}{{ '}' }}</b> trong nội dung để thêm biến động vào template
+          </small>
+        </div>
+      </div>
+
+      <div class="form-section" *ngIf="Object.keys(placeholders).length > 0">
+        <h3>🔧 Biến động (Placeholders)</h3>
+        
+        <div class="placeholders-container">
+          <div class="placeholder-item" *ngFor="let key of Object.keys(placeholders)">
+            <div class="placeholder-header">
+              <span class="placeholder-key">{{key}}</span>
+              <button type="button" class="remove-btn" (click)="removePlaceholder(key)" title="Xóa placeholder">×</button>
+            </div>
+            <input 
+              type="text" 
+              [value]="variables[key] || ''"
+              (input)="updatePlaceholderValue(key, $any($event.target).value)"
+              placeholder="Nhập giá trị cho {{key}}"
+              class="placeholder-input"
+            />
+          </div>
+        </div>
+
+        <div class="add-placeholder">
+          <input 
+            type="text" 
+            [(ngModel)]="newPlaceholder"
+            placeholder="Thêm placeholder mới"
+            class="form-control"
+            (keyup.enter)="addPlaceholder()"
+          />
+          <button type="button" class="add-btn" (click)="addPlaceholder()">➕ Thêm</button>
+        </div>
+      </div>
+
+      <div class="form-section" *ngIf="previewHtml">
+        <h3>👁️ Xem trước</h3>
+        <div class="preview-container">
+          <div class="notification-preview" [innerHTML]="previewHtml"></div>
         </div>
       </div>
 
       <div class="form-actions">
-        <button type="button" class="cancel-btn" (click)="router.navigate(['/templates'])">
-         
-          <span class="btn-text">Hủy</span>
+        <button type="button" class="cancel-btn" (click)="closeDialog()" [disabled]="loading">
+          ❌ Hủy
         </button>
         <button type="submit" class="save-btn" [disabled]="form.invalid || loading">
-          
-          <span class="btn-text">{{isEdit ? 'Cập nhật' : 'Tạo'}}</span>
+          <span *ngIf="!loading">{{isEdit ? '💾 Cập nhật' : '✨ Tạo'}}</span>
+          <span *ngIf="loading">🔄 {{isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}}</span>
         </button>
       </div>
     </form>
