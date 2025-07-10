@@ -2,7 +2,7 @@
   <div class="template-form-card">
     <div class="card-header">
       <h2>Chi tiết Notification Template</h2>
-      <button class="close-btn" (click)="goBack()">×</button>
+      <button class="close-btn" (click)="goBack()">X</button>
     </div>
     <div *ngIf="loading" class="loading">Đang tải...</div>
     <div *ngIf="error" class="error">{{error}}</div>
@@ -34,7 +34,7 @@
       </div>
     </div>
     <div *ngIf="!notification && !loading" class="empty-state">
-      <span class="empty-icon">📭</span>
+     
       <h3>Không tìm thấy notification.</h3>
       <p>Notification không tồn tại hoặc đã bị xóa.</p>
     </div>

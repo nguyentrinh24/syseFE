@@ -6,13 +6,13 @@
     </div>
 
     <div *ngIf="loading" class="loading-state">
-      <p>🔄 {{isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}}</p>
+      <p> {{isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}}</p>
     </div>
 
-    <!-- Success state -->
+    <!-- Success state
     <div *ngIf="!loading && !error && (form.get('name')?.value || form.get('code')?.value)" class="success-state">
-      <p>✅ {{isEdit ? 'Cập nhật thành công!' : 'Tạo thành công!'}}</p>
-    </div>
+      <p> {{isEdit ? 'Cập nhật thành công!' : 'Tạo thành công!'}}</p>
+    </div> -->
 
     <!-- Error state -->
     <div *ngIf="error" class="error-state">
@@ -21,7 +21,7 @@
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="template-form" *ngIf="!loading">
       <div class="form-section">
-        <h3>📝 Thông tin cơ bản</h3>
+        <h3> Thông tin cơ bản</h3>
         
         <div class="form-row">
           <div class="form-group">
@@ -93,8 +93,8 @@
             formControlName="status"
             class="form-control"
           >
-            <option [ngValue]="true">✅ Bật</option>
-            <option [ngValue]="false">❌ Tắt</option>
+            <option [ngValue]="true"> Bật</option>
+            <option [ngValue]="false"> Tắt</option>
           </select>
           <div class="error-message" *ngIf="fieldErrors['status']">
             {{ fieldErrors['status'] }}
@@ -103,7 +103,7 @@
       </div>
 
       <div class="form-section">
-        <h3>📄 Nội dung Template</h3>
+        <h3> Nội dung Template</h3>
         
         <div class="form-group">
           <label for="template-content">Nội dung HTML *</label>
@@ -130,14 +130,14 @@
       </div>
 
       <div class="form-section" *ngIf="Object.keys(placeholders).length > 0">
-        <h3>🔧 Biến động (Placeholders)</h3>
+        <h3> Biến động (Placeholders)</h3>
         
         <div class="placeholders-container">
           <div class="placeholder-item" *ngFor="let key of Object.keys(placeholders)">
-            <div class="placeholder-header">
+            <!-- <div class="placeholder-header">
               <span class="placeholder-key">{{key}}</span>
               <button type="button" class="remove-btn" (click)="removePlaceholder(key)" title="Xóa placeholder">×</button>
-            </div>
+            </div> -->
             <input 
               type="text" 
               [value]="variables[key] || ''"
@@ -148,7 +148,7 @@
           </div>
         </div>
 
-        <div class="add-placeholder">
+        <!-- <div class="add-placeholder">
           <input 
             type="text" 
             [(ngModel)]="newPlaceholder"
@@ -156,12 +156,12 @@
             class="form-control"
             (keyup.enter)="addPlaceholder()"
           />
-          <button type="button" class="add-btn" (click)="addPlaceholder()">➕ Thêm</button>
-        </div>
+          <button type="button" class="add-btn" (click)="addPlaceholder()">Thêm</button>
+        </div> -->
       </div>
 
       <div class="form-section" *ngIf="previewHtml">
-        <h3>👁️ Xem trước</h3>
+        <h3> Xem trước</h3>
         <div class="preview-container">
           <div class="notification-preview" [innerHTML]="previewHtml"></div>
         </div>
@@ -169,11 +169,11 @@
 
       <div class="form-actions">
         <button type="button" class="cancel-btn" (click)="closeDialog()" [disabled]="loading">
-          ❌ Hủy
+           Hủy
         </button>
         <button type="submit" class="save-btn" [disabled]="form.invalid || loading">
-          <span *ngIf="!loading">{{isEdit ? '💾 Cập nhật' : '✨ Tạo'}}</span>
-          <span *ngIf="loading">🔄 {{isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}}</span>
+          <span *ngIf="!loading">{{isEdit ? ' Cập nhật' : ' Tạo'}}</span>
+          <span *ngIf="loading"> {{isEdit ? 'Đang cập nhật...' : 'Đang tạo...'}}</span>
         </button>
       </div>
     </form>
